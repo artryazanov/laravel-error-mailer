@@ -67,12 +67,8 @@ $colors = $theme === 'dark' ? [
             <p class="exception-class" style="font-size: 14px; color: {{ $colors['text_main'] }}; font-weight: 600; margin: 0 0 12px 0; word-break: break-all;">
                 {{ $content['class'] ?? 'Exception' }}
             </p>
-            <div style="margin-bottom: 8px;">
-                <div style="display: inline-block; background-color: {{ $colors['badge_bg'] }}; color: {{ $colors['badge_text'] }}; padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
-                    {{ config('app.name', 'Laravel') }} &middot; {{ config('app.env', 'production') }}
-                </div>
-            </div>
             <div style="color: {{ $colors['text_muted'] }}; font-size: 12px;">
+                {{ config('app.name', 'Laravel') }} &middot; {{ config('app.env', 'production') }}<br>
                 PHP {{ PHP_VERSION }} &middot; Laravel {{ app()->version() }}
             </div>
         </div>
@@ -96,10 +92,10 @@ $colors = $theme === 'dark' ? [
                 @endif
                 
                 @if(!empty($content['server']))
-                <div style="margin-bottom: 16px;">
-                    <div style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px;">$_SERVER</div>
+                <details style="margin-bottom: 16px;">
+                    <summary style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px; cursor: pointer;">$_SERVER</summary>
                     <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['server'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
-                </div>
+                </details>
                 @endif
             @else
                 <!-- Web Context -->
@@ -122,30 +118,30 @@ $colors = $theme === 'dark' ? [
 
                 @if(!empty($content['body']))
                 <div style="margin-bottom: 16px;">
-                    <div style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px;">POST</div>
+                    <div style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px;">BODY</div>
                     <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
                 </div>
                 @endif
 
                 @if(!empty($content['headers']))
-                <div style="margin-bottom: 16px;">
-                    <div style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px;">HEADER</div>
+                <details style="margin-bottom: 16px;">
+                    <summary style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px; cursor: pointer;">HEADER</summary>
                     <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['headers'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
-                </div>
+                </details>
                 @endif
 
                 @if(!empty($content['cookie']))
-                <div style="margin-bottom: 16px;">
-                    <div style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px;">COOKIE</div>
+                <details style="margin-bottom: 16px;">
+                    <summary style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px; cursor: pointer;">COOKIE</summary>
                     <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['cookie'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
-                </div>
+                </details>
                 @endif
 
                 @if(!empty($content['server']))
-                <div style="margin-bottom: 16px;">
-                    <div style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px;">$_SERVER</div>
+                <details style="margin-bottom: 16px;">
+                    <summary style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px; cursor: pointer;">$_SERVER</summary>
                     <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['server'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
-                </div>
+                </details>
                 @endif
             @endif
         </div>
@@ -188,8 +184,7 @@ $colors = $theme === 'dark' ? [
         @if(!empty($content['markdown']))
         <div style="padding: 24px; background-color: {{ $colors['container_bg'] }}; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
             <div style="margin-bottom: 16px;">
-                <h2 style="display: inline-block; font-size: 16px; font-weight: 600; color: {{ $colors['text_main'] }}; margin: 0; text-transform: uppercase; letter-spacing: 0.05em;">Markdown Representation</h2>
-                <span style="font-size: 12px; color: {{ $colors['text_muted'] }}; margin-left: 12px;">(Manually copy the text below)</span>
+                <h2 style="display: inline-block; font-size: 16px; font-weight: 600; color: {{ $colors['text_main'] }}; margin: 0; text-transform: uppercase; letter-spacing: 0.05em;">Short Markdown Representation</h2>
             </div>
             <div style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; padding: 16px; border-radius: 6px; overflow-x: auto;">
                 <pre class="markdown-content" style="color: {{ $colors['text_muted'] }}; font-size: 12px; white-space: pre-wrap; margin: 0; line-height: 1.5;">{{ $content['markdown'] }}</pre>

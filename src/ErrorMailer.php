@@ -145,9 +145,7 @@ class ErrorMailer
         $appName = config('app.name', 'Laravel');
         $appEnv = config('app.env', 'production');
         $md .= "{$appName} · {$appEnv}\n";
-
-        $md .= 'PHP '.PHP_VERSION."\n";
-        $md .= 'Laravel '.app()->version()."\n\n";
+        $md .= 'PHP '.PHP_VERSION.' · Laravel '.app()->version()."\n\n";
 
         $md .= "## Request Context\n\n";
 
@@ -155,10 +153,6 @@ class ErrorMailer
             if (! empty($content['command'])) {
                 $md .= "### CONSOLE_COMMAND\n\n```json\n";
                 $md .= json_encode($content['command'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
-            }
-            if (! empty($content['server'])) {
-                $md .= "### \$_SERVER\n\n```json\n";
-                $md .= json_encode($content['server'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
             }
         } else {
             if (! empty($content['user'])) {
@@ -168,23 +162,8 @@ class ErrorMailer
             $md .= "### METHOD\n\n\"".($content['method'] ?? 'N/A')."\"\n\n";
 
             if (! empty($content['body'])) {
-                $md .= "### POST\n\n```json\n";
+                $md .= "### BODY\n\n```json\n";
                 $md .= json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
-            }
-
-            if (! empty($content['headers'])) {
-                $md .= "### HEADER\n\n```json\n";
-                $md .= json_encode($content['headers'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
-            }
-
-            if (! empty($content['cookie'])) {
-                $md .= "### COOKIE\n\n```json\n";
-                $md .= json_encode($content['cookie'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
-            }
-
-            if (! empty($content['server'])) {
-                $md .= "### \$_SERVER\n\n```json\n";
-                $md .= json_encode($content['server'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
             }
         }
 
