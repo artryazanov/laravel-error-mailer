@@ -125,13 +125,29 @@ class ErrorMailer
         $md = "# {$content['class']}\n\n";
         $md .= "{$content['message']}\n\n";
 
+        $appName = config('app.name', 'Laravel');
+        $appEnv = config('app.env', 'production');
+        $md .= "{$appName} · {$appEnv}\n";
+
         $md .= 'PHP '.PHP_VERSION."\n";
-        $md .= 'Laravel '.app()->version()."\n";
-        if (isset($content['url']) && $content['url'] !== 'Command Line / Artisan') {
-            $md .= "{$content['method']} {$content['url']}\n";
+        $md .= 'Laravel '.app()->version()."\n\n";
+
+        $md .= "## Request Context\n\n";
+        $md .= "**Method:** " . ($content['method'] ?? 'N/A') . "\n";
+        $md .= "**URL:** " . ($content['url'] ?? 'N/A') . "\n";
+        $md .= "**IP Address:** " . ($content['ip'] ?? 'N/A') . "\n\n";
+
+        if (!empty($content['headers'])) {
+            $md .= "## Headers\n\n```json\n";
+            $md .= json_encode($content['headers'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n```\n\n";
         }
 
-        $md .= "\n## Stack Trace\n\n";
+        if (!empty($content['body'])) {
+            $md .= "## Request Body\n\n```json\n";
+            $md .= json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n```\n\n";
+        }
+
+        $md .= "## Stack Trace\n\n";
         foreach (array_slice($content['trace'], 0, 40) as $index => $frame) {
             $file = $frame['file'] ?? '[internal]';
             $line = $frame['line'] ?? '';

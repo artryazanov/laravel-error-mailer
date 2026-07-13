@@ -70,4 +70,19 @@ class ExceptionOccurredTest extends TestCase
         $this->assertTrue($mailable->hasTo('admin@example.com'));
         $this->assertTrue($mailable->hasTo('super@example.com'));
     }
+
+    public function test_it_handles_empty_or_invalid_emails_configuration()
+    {
+        Config::set('error-mailer.to', null);
+        Config::set('error-mailer.cc', 123);
+        Config::set('error-mailer.bcc', []);
+
+        $mailable = new ExceptionOccurred(['message' => 'Test']);
+        $mailable->build();
+
+        // The mailable should still build successfully with empty recipients.
+        $this->assertEmpty($mailable->to);
+        $this->assertEmpty($mailable->cc);
+        $this->assertEmpty($mailable->bcc);
+    }
 }

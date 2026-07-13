@@ -90,7 +90,10 @@ class ErrorMailerTest extends TestCase
     {
         Config::set('error-mailer.enabled', true);
 
-        Mail::shouldReceive('send')->andThrow(new Exception('Mail failed'));
+        $mailerMock = \Mockery::mock(\Illuminate\Contracts\Mail\Mailer::class);
+        $mailerMock->shouldReceive('send')->andThrow(new Exception('Mail failed'));
+        // Swap the Mail facade directly to bypass Mail::fake()
+        \Illuminate\Support\Facades\Mail::swap($mailerMock);
 
         Log::shouldReceive('error')
             ->once()
@@ -98,7 +101,46 @@ class ErrorMailerTest extends TestCase
                 return str_contains($msg, 'ErrorMailer failed to send exception email: Mail failed');
             });
 
-        $exception = new Exception('Test');
+        $exception = new Exception('A test exception');
+
         ErrorMailer::handle($exception);
+    }
+
+    public function test_it_captures_http_request_context()
+    {
+        Config::set('error-mailer.enabled', true);
+
+        // Force runningInConsole to false using Reflection to simulate HTTP request
+        $app = app();
+        $reflection = new \ReflectionClass($app);
+        if ($reflection->hasProperty('isRunningInConsole')) {
+            $property = $reflection->getProperty('isRunningInConsole');
+            $property->setAccessible(true);
+            $property->setValue($app, false);
+        } elseif ($reflection->hasProperty('runningInConsole')) {
+            // Older laravel versions
+            $property = $reflection->getProperty('runningInConsole');
+            $property->setAccessible(true);
+            $property->setValue($app, false);
+        }
+
+        // Set up the request
+        $request = request();
+        $request->server->set('REMOTE_ADDR', '192.168.1.1');
+        $request->setMethod('POST');
+        $request->merge(['foo' => 'bar']);
+        $request->headers->set('X-Test-Header', 'TestValue');
+
+        $exception = new Exception('HTTP error');
+
+        ErrorMailer::handle($exception);
+
+        Mail::assertQueued(ExceptionOccurred::class, function ($mail) {
+            $mail->build();
+            return $mail->content['ip'] === '192.168.1.1' &&
+                   $mail->content['method'] === 'POST' &&
+                   $mail->content['body'] === ['foo' => 'bar'] &&
+                   strtolower($mail->content['headers']['x-test-header']) === strtolower('TestValue');
+        });
     }
 }

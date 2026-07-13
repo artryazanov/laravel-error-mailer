@@ -152,7 +152,7 @@ $colors = $theme === 'dark' ? [
         <div style="padding: 24px; background-color: {{ $colors['container_bg'] }}; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
             <div style="margin-bottom: 16px;">
                 <h2 style="display: inline-block; font-size: 16px; font-weight: 600; color: {{ $colors['text_main'] }}; margin: 0; text-transform: uppercase; letter-spacing: 0.05em;">Markdown Representation</h2>
-                <span style="font-size: 12px; color: {{ $colors['text_muted'] }}; margin-left: 12px;">(Select and copy text below)</span>
+                <span style="font-size: 12px; color: {{ $colors['text_muted'] }}; margin-left: 12px;">(Manually copy the text below)</span>
             </div>
             <div style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; padding: 16px; border-radius: 6px; overflow-x: auto;">
                 <pre class="markdown-content" style="color: {{ $colors['text_muted'] }}; font-size: 12px; white-space: pre-wrap; margin: 0; line-height: 1.5;">{{ $content['markdown'] }}</pre>
