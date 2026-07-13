@@ -133,18 +133,18 @@ class ErrorMailer
         $md .= 'Laravel '.app()->version()."\n\n";
 
         $md .= "## Request Context\n\n";
-        $md .= "**Method:** " . ($content['method'] ?? 'N/A') . "\n";
-        $md .= "**URL:** " . ($content['url'] ?? 'N/A') . "\n";
-        $md .= "**IP Address:** " . ($content['ip'] ?? 'N/A') . "\n\n";
+        $md .= '**Method:** '.($content['method'] ?? 'N/A')."\n";
+        $md .= '**URL:** '.($content['url'] ?? 'N/A')."\n";
+        $md .= '**IP Address:** '.($content['ip'] ?? 'N/A')."\n\n";
 
-        if (!empty($content['headers'])) {
+        if (! empty($content['headers'])) {
             $md .= "## Headers\n\n```json\n";
-            $md .= json_encode($content['headers'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n```\n\n";
+            $md .= json_encode($content['headers'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
         }
 
-        if (!empty($content['body'])) {
+        if (! empty($content['body'])) {
             $md .= "## Request Body\n\n```json\n";
-            $md .= json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n```\n\n";
+            $md .= json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
         }
 
         $md .= "## Stack Trace\n\n";

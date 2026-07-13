@@ -6,6 +6,7 @@ use Artryazanov\ErrorMailer\Facades\ErrorMailer;
 use Artryazanov\ErrorMailer\Mail\ExceptionOccurred;
 use Artryazanov\ErrorMailer\Tests\TestCase;
 use Exception;
+use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -90,10 +91,10 @@ class ErrorMailerTest extends TestCase
     {
         Config::set('error-mailer.enabled', true);
 
-        $mailerMock = \Mockery::mock(\Illuminate\Contracts\Mail\Mailer::class);
+        $mailerMock = \Mockery::mock(Mailer::class);
         $mailerMock->shouldReceive('send')->andThrow(new Exception('Mail failed'));
         // Swap the Mail facade directly to bypass Mail::fake()
-        \Illuminate\Support\Facades\Mail::swap($mailerMock);
+        Mail::swap($mailerMock);
 
         Log::shouldReceive('error')
             ->once()
@@ -137,6 +138,7 @@ class ErrorMailerTest extends TestCase
 
         Mail::assertQueued(ExceptionOccurred::class, function ($mail) {
             $mail->build();
+
             return $mail->content['ip'] === '192.168.1.1' &&
                    $mail->content['method'] === 'POST' &&
                    $mail->content['body'] === ['foo' => 'bar'] &&
