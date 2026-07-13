@@ -16,13 +16,12 @@ class ExceptionOccurred extends Mailable implements ShouldQueue
     /**
      * Create a new message instance.
      *
-     * @param array $content
      * @return void
      */
     public function __construct(array $content)
     {
         $this->content = $content;
-        
+
         // Ensure this mailable is dispatched to a queue if configured or by default
         $this->onQueue(config('error-mailer.queue', 'default'));
     }
@@ -39,7 +38,7 @@ class ExceptionOccurred extends Mailable implements ShouldQueue
         $ccEmails = $this->parseEmails(config('error-mailer.cc'));
         $bccEmails = $this->parseEmails(config('error-mailer.bcc'));
         $fromSender = config('error-mailer.from');
-        
+
         $subject = config('error-mailer.subject');
         $subject = $this->buildSubjectWithMessageHash($subject);
 
@@ -79,6 +78,6 @@ class ExceptionOccurred extends Mailable implements ShouldQueue
         $message = (string) ($this->content['message'] ?? '');
         $hash = substr(sha1($message), 0, 10);
 
-        return trim($subject . ' [' . $hash . ']');
+        return trim($subject.' ['.$hash.']');
     }
 }

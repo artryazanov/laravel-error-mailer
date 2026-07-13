@@ -10,7 +10,9 @@ parameters:
     level: 5
 
     ignoreErrors:
-        # Add any ignores here
+        -
+            message: '#Called .env. outside of the config directory#'
+            path: config/error-mailer.php
         
     excludePaths:
         - vendor/*

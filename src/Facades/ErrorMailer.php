@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static void handle(\Throwable $exception)
- * 
+ *
  * @see \Artryazanov\ErrorMailer\ErrorMailer
  */
 class ErrorMailer extends Facade

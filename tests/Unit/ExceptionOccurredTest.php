@@ -18,7 +18,7 @@ class ExceptionOccurredTest extends TestCase
         $content = [
             'message' => 'Something went wrong',
             'file' => 'test.php',
-            'line' => 123
+            'line' => 123,
         ];
 
         $mailable = new ExceptionOccurred($content);
@@ -38,13 +38,13 @@ class ExceptionOccurredTest extends TestCase
         Config::set('error-mailer.to', 'admin@example.com, super@example.com');
         Config::set('error-mailer.cc', 'cc1@example.com,cc2@example.com');
         Config::set('error-mailer.bcc', 'bcc@example.com');
-        
+
         $mailable = new ExceptionOccurred(['message' => 'Test']);
         $mailable->build();
 
         $this->assertTrue($mailable->hasTo('admin@example.com'));
         $this->assertTrue($mailable->hasTo('super@example.com'));
-        
+
         $this->assertTrue($mailable->hasCc('cc1@example.com'));
         $this->assertTrue($mailable->hasCc('cc2@example.com'));
 

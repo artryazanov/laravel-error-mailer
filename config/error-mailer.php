@@ -68,7 +68,7 @@ return [
     |
     */
 
-    'subject' => env('ERROR_MAILER_SUBJECT', 'Error on ' . env('APP_ENV', 'production')),
+    'subject' => env('ERROR_MAILER_SUBJECT', 'Error on '.env('APP_ENV', 'production')),
 
     /*
     |--------------------------------------------------------------------------

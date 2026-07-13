@@ -3,6 +3,8 @@
 namespace Artryazanov\ErrorMailer\Tests;
 
 use Artryazanov\ErrorMailer\ErrorMailerServiceProvider;
+use Artryazanov\ErrorMailer\Facades\ErrorMailer;
+use Illuminate\Foundation\Application;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -15,7 +17,7 @@ class TestCase extends Orchestra
     /**
      * Get package providers.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  Application  $app
      * @return array
      */
     protected function getPackageProviders($app)
@@ -28,13 +30,13 @@ class TestCase extends Orchestra
     /**
      * Get package aliases.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  Application  $app
      * @return array
      */
     protected function getPackageAliases($app)
     {
         return [
-            'ErrorMailer' => \Artryazanov\ErrorMailer\Facades\ErrorMailer::class,
+            'ErrorMailer' => ErrorMailer::class,
         ];
     }
 }

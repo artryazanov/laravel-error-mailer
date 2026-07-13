@@ -2,9 +2,11 @@
 
 namespace Artryazanov\ErrorMailer\Tests\Feature;
 
-use Artryazanov\ErrorMailer\Tests\TestCase;
 use Artryazanov\ErrorMailer\ErrorMailer;
+use Artryazanov\ErrorMailer\ErrorMailerServiceProvider;
+use Artryazanov\ErrorMailer\Tests\TestCase;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\ServiceProvider;
 
 class ServiceProviderTest extends TestCase
 {
@@ -17,15 +19,15 @@ class ServiceProviderTest extends TestCase
     public function test_it_registers_facade()
     {
         $mailer = $this->app->make('error-mailer');
-        
+
         $this->assertInstanceOf(ErrorMailer::class, $mailer);
     }
 
     public function test_it_can_publish_assets()
     {
         // This tests that the publishers are registered correctly in the Service Provider
-        $publishGroups = \Illuminate\Support\ServiceProvider::pathsToPublish(
-            \Artryazanov\ErrorMailer\ErrorMailerServiceProvider::class
+        $publishGroups = ServiceProvider::pathsToPublish(
+            ErrorMailerServiceProvider::class
         );
 
         $this->assertArrayHasKey(

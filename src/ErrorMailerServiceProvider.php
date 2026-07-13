@@ -32,7 +32,7 @@ class ErrorMailerServiceProvider extends ServiceProvider
         );
 
         $this->app->singleton('error-mailer', function ($app) {
-            return new ErrorMailer();
+            return new ErrorMailer;
         });
     }
 }

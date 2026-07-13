@@ -12,21 +12,18 @@ class ErrorMailer
 {
     /**
      * Handles the exception and sends an email notification.
-     *
-     * @param Throwable $exception
-     * @return void
      */
     public function handle(Throwable $exception): void
     {
         // Check if the mailer is enabled
-        if (!config('error-mailer.enabled', true)) {
+        if (! config('error-mailer.enabled', true)) {
             return;
         }
 
         // Anti-spam: limit error email notifications to a maximum number per time window
         $limit = (int) config('error-mailer.rate_limit.limit', 15);
         $decay = (int) config('error-mailer.rate_limit.window', 3600); // 1 hour by default
-        $key = 'error-mailer-mails:' . config('app.env');
+        $key = 'error-mailer-mails:'.config('app.env');
 
         if (RateLimiter::tooManyAttempts($key, $limit)) {
             // Skip sending to prevent spam
@@ -38,24 +35,21 @@ class ErrorMailer
 
             return;
         }
-        
+
         RateLimiter::hit($key, $decay);
 
         try {
             $content = $this->prepareExceptionData($exception);
-            
+
             // Queue the email
             Mail::send(new ExceptionOccurred($content));
         } catch (Throwable $e) {
-            Log::error('ErrorMailer failed to send exception email: ' . $e->getMessage());
+            Log::error('ErrorMailer failed to send exception email: '.$e->getMessage());
         }
     }
 
     /**
      * Prepares the exception data into a serializable array for the mailable.
-     *
-     * @param Throwable $exception
-     * @return array
      */
     protected function prepareExceptionData(Throwable $exception): array
     {
@@ -64,13 +58,13 @@ class ErrorMailer
         $content['message'] = $exception->getMessage();
         $content['file'] = $exception->getFile();
         $content['line'] = $exception->getLine();
-        
+
         // Sanitize trace to serializable, minimal fields used by the view
         $content['trace'] = collect($exception->getTrace())
             ->map(function ($frame) {
                 return [
                     'class' => $frame['class'] ?? null,
-                    'function' => $frame['function'] ?? null,
+                    'function' => $frame['function'],
                     'file' => $frame['file'] ?? null,
                     'line' => $frame['line'] ?? null,
                 ];
@@ -100,7 +94,7 @@ class ErrorMailer
                     ->map(function ($frame) {
                         return [
                             'class' => $frame['class'] ?? null,
-                            'function' => $frame['function'] ?? null,
+                            'function' => $frame['function'],
                             'file' => $frame['file'] ?? null,
                             'line' => $frame['line'] ?? null,
                         ];
