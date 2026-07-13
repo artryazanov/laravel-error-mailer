@@ -27,7 +27,7 @@ class ErrorMailerTest extends TestCase
 
         ErrorMailer::handle($exception);
 
-        Mail::assertSent(ExceptionOccurred::class, function ($mail) {
+        Mail::assertQueued(ExceptionOccurred::class, function ($mail) {
             $mail->build();
 
             return $mail->content['message'] === 'A test exception' &&
@@ -44,7 +44,7 @@ class ErrorMailerTest extends TestCase
 
         ErrorMailer::handle($exception);
 
-        Mail::assertNothingSent();
+        Mail::assertNothingQueued();
     }
 
     public function test_it_respects_rate_limit()
@@ -64,7 +64,7 @@ class ErrorMailerTest extends TestCase
         ErrorMailer::handle($exception);
         ErrorMailer::handle($exception);
 
-        Mail::assertSent(ExceptionOccurred::class, 2);
+        Mail::assertQueued(ExceptionOccurred::class, 2);
 
         $key = 'error-mailer-mails:'.config('app.env');
         $this->assertTrue(RateLimiter::tooManyAttempts($key, 2));
@@ -79,7 +79,7 @@ class ErrorMailerTest extends TestCase
 
         ErrorMailer::handle($exception);
 
-        Mail::assertSent(ExceptionOccurred::class, function ($mail) {
+        Mail::assertQueued(ExceptionOccurred::class, function ($mail) {
             return isset($mail->content['previous']) &&
                    $mail->content['previous']['message'] === 'Previous error';
         });
