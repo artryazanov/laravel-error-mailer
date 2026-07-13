@@ -80,7 +80,7 @@ class ErrorMailer
             $content['body'] = [];
             $content['headers'] = [];
             $content['command'] = $_SERVER['argv'] ?? [];
-            $content['server'] = $_SERVER ?? [];
+            $content['server'] = $_SERVER;
         } else {
             $content['is_console'] = false;
             $content['url'] = request()->fullUrl();
@@ -89,7 +89,7 @@ class ErrorMailer
             $content['body'] = request()->all();
             $content['headers'] = request()->headers->all();
             $content['cookie'] = request()->cookie();
-            $content['server'] = $_SERVER ?? [];
+            $content['server'] = $_SERVER;
 
             $user = request()->user();
             if ($user) {
@@ -102,7 +102,7 @@ class ErrorMailer
                 } elseif (isset($user->id)) {
                     $userStr = "ID: {$user->id}";
                 } else {
-                    $userStr = "Authenticated User";
+                    $userStr = 'Authenticated User';
                 }
                 $content['user'] = trim($userStr);
             }
@@ -152,37 +152,37 @@ class ErrorMailer
         $md .= "## Request Context\n\n";
 
         if ($content['is_console'] ?? false) {
-            if (!empty($content['command'])) {
+            if (! empty($content['command'])) {
                 $md .= "### CONSOLE_COMMAND\n\n```json\n";
                 $md .= json_encode($content['command'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
             }
-            if (!empty($content['server'])) {
+            if (! empty($content['server'])) {
                 $md .= "### \$_SERVER\n\n```json\n";
                 $md .= json_encode($content['server'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
             }
         } else {
-            if (!empty($content['user'])) {
+            if (! empty($content['user'])) {
                 $md .= "### USER\n\n\"{$content['user']}\"\n\n";
             }
             $md .= "### URL\n\n\"".($content['url'] ?? 'N/A')."\"\n\n";
             $md .= "### METHOD\n\n\"".($content['method'] ?? 'N/A')."\"\n\n";
 
-            if (!empty($content['body'])) {
+            if (! empty($content['body'])) {
                 $md .= "### POST\n\n```json\n";
                 $md .= json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
             }
 
-            if (!empty($content['headers'])) {
+            if (! empty($content['headers'])) {
                 $md .= "### HEADER\n\n```json\n";
                 $md .= json_encode($content['headers'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
             }
 
-            if (!empty($content['cookie'])) {
+            if (! empty($content['cookie'])) {
                 $md .= "### COOKIE\n\n```json\n";
                 $md .= json_encode($content['cookie'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
             }
 
-            if (!empty($content['server'])) {
+            if (! empty($content['server'])) {
                 $md .= "### \$_SERVER\n\n```json\n";
                 $md .= json_encode($content['server'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
             }

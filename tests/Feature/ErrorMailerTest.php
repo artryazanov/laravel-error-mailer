@@ -167,9 +167,10 @@ class ErrorMailerTest extends TestCase
 
         // 1. Test with email and name
         $request->setUserResolver(function () {
-            $user = new \stdClass();
+            $user = new \stdClass;
             $user->name = 'John Doe';
             $user->email = 'john@example.com';
+
             return $user;
         });
 
@@ -177,13 +178,15 @@ class ErrorMailerTest extends TestCase
 
         Mail::assertQueued(ExceptionOccurred::class, function ($mail) {
             $mail->build();
+
             return $mail->content['user'] === 'John Doe (john@example.com)';
         });
 
         // 2. Test with ID only
         $request->setUserResolver(function () {
-            $user = new \stdClass();
+            $user = new \stdClass;
             $user->id = 123;
+
             return $user;
         });
 
@@ -191,18 +194,20 @@ class ErrorMailerTest extends TestCase
 
         Mail::assertQueued(ExceptionOccurred::class, function ($mail) {
             $mail->build();
+
             return $mail->content['user'] === 'ID: 123';
         });
 
         // 3. Test with basic authenticated user (no specific attributes)
         $request->setUserResolver(function () {
-            return new \stdClass();
+            return new \stdClass;
         });
 
         ErrorMailer::handle(new Exception('HTTP error 3'));
 
         Mail::assertQueued(ExceptionOccurred::class, function ($mail) {
             $mail->build();
+
             return $mail->content['user'] === 'Authenticated User';
         });
     }
