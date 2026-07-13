@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # Отслеживаем обновления пакетов Composer (PHP)
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Отслеживаем обновления версий GitHub Actions (например, actions/checkout)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
