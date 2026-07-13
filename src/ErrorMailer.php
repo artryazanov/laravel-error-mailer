@@ -83,10 +83,10 @@ class ErrorMailer
             $content['method'] = request()->method();
             $content['ip'] = request()->ip();
             $content['body'] = request()->all();
-            
+
             $headers = [];
             foreach (request()->headers->all() as $key => $value) {
-                $headers[$key] = is_array($value) ? implode(', ', $value) : $value;
+                $headers[$key] = implode(', ', $value);
             }
             $content['headers'] = $headers;
         }
@@ -124,13 +124,13 @@ class ErrorMailer
     {
         $md = "# {$content['class']}\n\n";
         $md .= "{$content['message']}\n\n";
-        
-        $md .= "PHP " . PHP_VERSION . "\n";
-        $md .= "Laravel " . app()->version() . "\n";
+
+        $md .= 'PHP '.PHP_VERSION."\n";
+        $md .= 'Laravel '.app()->version()."\n";
         if (isset($content['url']) && $content['url'] !== 'Command Line / Artisan') {
             $md .= "{$content['method']} {$content['url']}\n";
         }
-        
+
         $md .= "\n## Stack Trace\n\n";
         foreach (array_slice($content['trace'], 0, 40) as $index => $frame) {
             $file = $frame['file'] ?? '[internal]';
@@ -149,16 +149,16 @@ class ErrorMailer
             }
         }
 
-        if (!empty($content['headers'])) {
+        if (! empty($content['headers'])) {
             $md .= "\n## Headers\n\n";
             foreach ($content['headers'] as $key => $value) {
                 $md .= "* **{$key}**: {$value}\n";
             }
         }
 
-        if (!empty($content['body'])) {
+        if (! empty($content['body'])) {
             $md .= "\n## Request Body\n\n```json\n";
-            $md .= json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n";
+            $md .= json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n";
             $md .= "```\n";
         }
 

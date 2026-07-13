@@ -87,7 +87,7 @@ return [
     | Exception Email Theme
     |--------------------------------------------------------------------------
     |
-    | This is the theme that will be used for the email. 
+    | This is the theme that will be used for the email.
     | Supported values: "light", "dark".
     |
     */

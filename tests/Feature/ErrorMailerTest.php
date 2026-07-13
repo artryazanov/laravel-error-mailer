@@ -7,6 +7,7 @@ use Artryazanov\ErrorMailer\Mail\ExceptionOccurred;
 use Artryazanov\ErrorMailer\Tests\TestCase;
 use Exception;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -88,15 +89,15 @@ class ErrorMailerTest extends TestCase
     public function test_it_logs_error_when_mail_send_fails()
     {
         Config::set('error-mailer.enabled', true);
-        
+
         Mail::shouldReceive('send')->andThrow(new Exception('Mail failed'));
-        
-        \Illuminate\Support\Facades\Log::shouldReceive('error')
+
+        Log::shouldReceive('error')
             ->once()
-            ->withArgs(function($msg) {
+            ->withArgs(function ($msg) {
                 return str_contains($msg, 'ErrorMailer failed to send exception email: Mail failed');
             });
-            
+
         $exception = new Exception('Test');
         ErrorMailer::handle($exception);
     }

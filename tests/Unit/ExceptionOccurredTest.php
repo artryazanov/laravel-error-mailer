@@ -63,7 +63,7 @@ class ExceptionOccurredTest extends TestCase
     public function test_it_parses_array_emails()
     {
         Config::set('error-mailer.to', ['admin@example.com', 'super@example.com']);
-        
+
         $mailable = new ExceptionOccurred(['message' => 'Test']);
         $mailable->build();
 
