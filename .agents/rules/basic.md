@@ -16,7 +16,7 @@
 *   **Running Tests:** Use `composer test` or `./vendor/bin/phpunit`. To run with coverage, use `./vendor/bin/phpunit --coverage-text` (ensure PCOV or Xdebug is enabled in your PHP environment).
 
 ## Architecture & Email Design
-*   **Email Templates:** Keep email templates safe for strict email clients. Use inline CSS and HTML tables where necessary, and avoid JavaScript or external stylesheets.
+*   **Email Templates:** Keep email templates safe for strict email clients. Use inline CSS and avoid JavaScript or external stylesheets. When using interactive HTML elements (like `<details>`/`<summary>`), ensure they degrade gracefully in clients that do not support them (e.g., displaying expanded by default).
 *   **Dependencies:** Minimize external dependencies to keep the package lightweight.
 *   **Configuration:** Provide sensible defaults in the configuration file (`config/error-mailer.php`) and document all ENV variables.
-*   **Consistency:** Keep the structure, order of information, and presented data consistent between the HTML email view (`exception.blade.php`) and the Markdown representation (`generateMarkdown()`).
+*   **Consistency:** Keep the structure, order of information, and presented data consistent between the HTML email view (`exception.blade.php`) and the Markdown representation (`generateMarkdown()`). Note that the Markdown representation is considered a "Short" version and explicitly omits verbose blocks (like `HEADER`, `COOKIE`, and `$_SERVER`) to remain compact.
