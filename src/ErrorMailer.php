@@ -139,8 +139,8 @@ class ErrorMailer
      */
     protected function generateMarkdown(array $content): string
     {
-        $md = "# {$content['class']}\n\n";
-        $md .= "{$content['message']}\n\n";
+        $md = "# {$content['message']}\n\n";
+        $md .= "{$content['class']}\n\n";
 
         $appName = config('app.name', 'Laravel');
         $appEnv = config('app.env', 'production');

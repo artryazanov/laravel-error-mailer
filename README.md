@@ -16,6 +16,7 @@ Laravel 11-13 package to automatically send detailed exception reports to config
   - **Console Commands (CLI):** Command arguments and `$_SERVER` array.
 - **Markdown Representation:** A built-in, copyable Markdown block containing the full context and stack trace for easy pasting into Jira, GitHub Issues, etc.
 - **Rate Limiting:** Protects your inbox from spam when a recurring error floods your application.
+- **Smart Email Subjects:** The error message is automatically appended to the email subject line (and truncated if too long), making it easy to identify the error at a glance.
 - **Previous Exceptions:** Automatically unwraps and displays previous exceptions in the chain.
 ## 📋 Requirements
 - PHP 8.2+
@@ -50,7 +51,7 @@ ERROR_MAILER_FROM=error-mailer@example.com
 ERROR_MAILER_TO=admin@example.com
 ERROR_MAILER_CC=
 ERROR_MAILER_BCC=
-ERROR_MAILER_SUBJECT="Error on production"
+ERROR_MAILER_SUBJECT="Error on production" # The error message is automatically appended
 ERROR_MAILER_THEME=light # "light" or "dark"
 
 # Rate limit: Max emails to send per time window (in seconds)

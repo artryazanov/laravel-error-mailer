@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 
 class ExceptionOccurred extends Mailable implements ShouldQueue
 {
@@ -40,7 +41,7 @@ class ExceptionOccurred extends Mailable implements ShouldQueue
         $fromSender = config('error-mailer.from');
 
         $subject = config('error-mailer.subject');
-        $subject = $this->buildSubjectWithMessageHash($subject);
+        $subject = $this->buildSubjectWithMessage($subject);
 
         $view = config('error-mailer.view', 'error-mailer::emails.exception');
 
@@ -70,14 +71,20 @@ class ExceptionOccurred extends Mailable implements ShouldQueue
     }
 
     /**
-     * Build a subject with a deterministic hash based on the exception message.
+     * Build a subject with the exception message and a deterministic hash.
      * Assumes $this->content['message'] is always a string.
      */
-    private function buildSubjectWithMessageHash(string $subject): string
+    private function buildSubjectWithMessage(string $subject): string
     {
         $message = (string) ($this->content['message'] ?? '');
+        $shortMessage = Str::limit($message, 100);
         $hash = substr(sha1($message), 0, 10);
 
-        return trim($subject.' ['.$hash.']');
+        $finalSubject = trim($subject);
+        if ($shortMessage !== '') {
+            $finalSubject .= ': ' . $shortMessage;
+        }
+
+        return $finalSubject . ' [' . $hash . ']';
     }
 }

@@ -24,9 +24,9 @@ class ExceptionOccurredTest extends TestCase
         $mailable = new ExceptionOccurred($content);
         $mailable->build();
 
-        // Check subject contains the hashed message
+        // Check subject contains the message and hashed message
         $hash = substr(sha1('Something went wrong'), 0, 10);
-        $this->assertEquals("Site Error [{$hash}]", $mailable->subject);
+        $this->assertEquals("Site Error: Something went wrong [{$hash}]", $mailable->subject);
 
         $this->assertTrue($mailable->hasFrom('system@example.com'));
         $this->assertTrue($mailable->hasTo('admin@example.com'));

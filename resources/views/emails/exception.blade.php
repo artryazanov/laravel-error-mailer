@@ -61,15 +61,20 @@ $colors = $theme === 'dark' ? [
         
         <!-- Header / Exception Info -->
         <div style="background-color: {{ $colors['bg'] }}; border-bottom: 1px solid {{ $colors['border'] }}; padding: 24px;">
-            <div style="display: inline-block; background-color: {{ $colors['badge_bg'] }}; color: {{ $colors['badge_text'] }}; padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em;">
-                {{ config('app.name', 'Laravel') }} &middot; {{ config('app.env', 'production') }}
-            </div>
-            <p class="exception-class" style="font-size: 14px; color: {{ $colors['text_muted'] }}; margin: 0 0 8px 0; word-break: break-all;">
-                {{ $content['class'] ?? 'Exception' }}
-            </p>
-            <h1 style="font-size: 24px; font-weight: 700; color: {{ $colors['accent_red'] }}; margin: 0; line-height: 1.3;">
+            <h1 style="font-size: 24px; font-weight: 700; color: {{ $colors['accent_red'] }}; margin: 0 0 8px 0; line-height: 1.3;">
                 {{ $content['message'] ?? 'An error occurred' }}
             </h1>
+            <p class="exception-class" style="font-size: 14px; color: {{ $colors['text_main'] }}; font-weight: 600; margin: 0 0 12px 0; word-break: break-all;">
+                {{ $content['class'] ?? 'Exception' }}
+            </p>
+            <div style="margin-bottom: 8px;">
+                <div style="display: inline-block; background-color: {{ $colors['badge_bg'] }}; color: {{ $colors['badge_text'] }}; padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                    {{ config('app.name', 'Laravel') }} &middot; {{ config('app.env', 'production') }}
+                </div>
+            </div>
+            <div style="color: {{ $colors['text_muted'] }}; font-size: 12px;">
+                PHP {{ PHP_VERSION }} &middot; Laravel {{ app()->version() }}
+            </div>
         </div>
 
         <!-- Request Context -->
