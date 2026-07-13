@@ -82,9 +82,9 @@ class ExceptionOccurred extends Mailable implements ShouldQueue
 
         $finalSubject = trim($subject);
         if ($shortMessage !== '') {
-            $finalSubject .= ': ' . $shortMessage;
+            $finalSubject .= ': '.$shortMessage;
         }
 
-        return $finalSubject . ' [' . $hash . ']';
+        return $finalSubject.' ['.$hash.']';
     }
 }
