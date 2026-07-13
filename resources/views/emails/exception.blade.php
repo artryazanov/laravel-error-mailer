@@ -57,6 +57,7 @@
                             <span class="exception_title"><span title="{{ $content['class'] ?? 'Exception' }}">{{ basename($content['class'] ?? 'Exception') }}</span></span>
                         </h3>
                         <p class="break-long-words trace-message">{{ $content['message'] ?? '' }}</p>
+                        <p class="">Project: {{ config('app.name', 'Laravel') }} ({{ config('app.env', 'production') }})</p>
                         <p class="">URL: {{ $content['url'] ?? '' }}</p>
                         <p class="">IP: {{ $content['ip'] ?? '' }}</p>
                     </th></tr></thead>
