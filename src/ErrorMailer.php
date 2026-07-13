@@ -74,12 +74,21 @@ class ErrorMailer
         // Get request details safely (can be called in console commands where request() might not have URL/IP)
         if (app()->runningInConsole()) {
             $content['url'] = 'Command Line / Artisan';
+            $content['method'] = 'CLI';
             $content['ip'] = '127.0.0.1';
             $content['body'] = [];
+            $content['headers'] = [];
         } else {
-            $content['url'] = request()->url();
-            $content['body'] = request()->all();
+            $content['url'] = request()->fullUrl();
+            $content['method'] = request()->method();
             $content['ip'] = request()->ip();
+            $content['body'] = request()->all();
+            
+            $headers = [];
+            foreach (request()->headers->all() as $key => $value) {
+                $headers[$key] = is_array($value) ? implode(', ', $value) : $value;
+            }
+            $content['headers'] = $headers;
         }
 
         // Include previous exception details if present (sanitized)
@@ -103,6 +112,56 @@ class ErrorMailer
             ];
         }
 
+        $content['markdown'] = $this->generateMarkdown($content);
+
         return $content;
+    }
+
+    /**
+     * Generates a Markdown representation of the exception.
+     */
+    protected function generateMarkdown(array $content): string
+    {
+        $md = "# {$content['class']}\n\n";
+        $md .= "{$content['message']}\n\n";
+        
+        $md .= "PHP " . PHP_VERSION . "\n";
+        $md .= "Laravel " . app()->version() . "\n";
+        if (isset($content['url']) && $content['url'] !== 'Command Line / Artisan') {
+            $md .= "{$content['method']} {$content['url']}\n";
+        }
+        
+        $md .= "\n## Stack Trace\n\n";
+        foreach (array_slice($content['trace'], 0, 40) as $index => $frame) {
+            $file = $frame['file'] ?? '[internal]';
+            $line = $frame['line'] ?? '';
+            $md .= "{$index} - {$file}:{$line}\n";
+        }
+
+        if (isset($content['previous'])) {
+            $md .= "\n## Previous Exception\n\n";
+            $md .= "### {$content['previous']['class']}\n\n";
+            $md .= "{$content['previous']['message']}\n\n";
+            foreach (array_slice($content['previous']['trace'], 0, 40) as $index => $frame) {
+                $file = $frame['file'] ?? '[internal]';
+                $line = $frame['line'] ?? '';
+                $md .= "{$index} - {$file}:{$line}\n";
+            }
+        }
+
+        if (!empty($content['headers'])) {
+            $md .= "\n## Headers\n\n";
+            foreach ($content['headers'] as $key => $value) {
+                $md .= "* **{$key}**: {$value}\n";
+            }
+        }
+
+        if (!empty($content['body'])) {
+            $md .= "\n## Request Body\n\n```json\n";
+            $md .= json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n";
+            $md .= "```\n";
+        }
+
+        return $md;
     }
 }

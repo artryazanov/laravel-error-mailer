@@ -84,4 +84,20 @@ class ErrorMailerTest extends TestCase
                    $mail->content['previous']['message'] === 'Previous error';
         });
     }
+
+    public function test_it_logs_error_when_mail_send_fails()
+    {
+        Config::set('error-mailer.enabled', true);
+        
+        Mail::shouldReceive('send')->andThrow(new Exception('Mail failed'));
+        
+        \Illuminate\Support\Facades\Log::shouldReceive('error')
+            ->once()
+            ->withArgs(function($msg) {
+                return str_contains($msg, 'ErrorMailer failed to send exception email: Mail failed');
+            });
+            
+        $exception = new Exception('Test');
+        ErrorMailer::handle($exception);
+    }
 }

@@ -59,4 +59,15 @@ class ExceptionOccurredTest extends TestCase
 
         $this->assertEquals('high-priority', $mailable->queue);
     }
+
+    public function test_it_parses_array_emails()
+    {
+        Config::set('error-mailer.to', ['admin@example.com', 'super@example.com']);
+        
+        $mailable = new ExceptionOccurred(['message' => 'Test']);
+        $mailable->build();
+
+        $this->assertTrue($mailable->hasTo('admin@example.com'));
+        $this->assertTrue($mailable->hasTo('super@example.com'));
+    }
 }
