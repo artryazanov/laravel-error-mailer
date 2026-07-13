@@ -148,6 +148,7 @@ class ErrorMailer
         }
 
         $md .= "## Stack Trace\n\n";
+        $md .= "**Exception Location:** {$content['file']}:{$content['line']}\n\n";
         foreach (array_slice($content['trace'], 0, 40) as $index => $frame) {
             $file = $frame['file'] ?? '[internal]';
             $line = $frame['line'] ?? '';
@@ -158,6 +159,7 @@ class ErrorMailer
             $md .= "\n## Previous Exception\n\n";
             $md .= "### {$content['previous']['class']}\n\n";
             $md .= "{$content['previous']['message']}\n\n";
+            $md .= "**Exception Location:** {$content['previous']['file']}:{$content['previous']['line']}\n\n";
             foreach (array_slice($content['previous']['trace'], 0, 40) as $index => $frame) {
                 $file = $frame['file'] ?? '[internal]';
                 $line = $frame['line'] ?? '';
