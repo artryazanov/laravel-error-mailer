@@ -9,6 +9,14 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
+    /**
+     * The latest response.
+     *
+     * @var mixed
+     */
+    public static $latestResponse;
+
+
     protected function setUp(): void
     {
         parent::setUp();
