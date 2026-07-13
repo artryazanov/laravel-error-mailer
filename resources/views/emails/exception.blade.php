@@ -75,43 +75,75 @@ $colors = $theme === 'dark' ? [
         <!-- Request Context -->
         <div style="padding: 24px; border-bottom: 1px solid {{ $colors['border'] }};">
             <h2 style="font-size: 16px; font-weight: 600; color: {{ $colors['text_main'] }}; margin: 0 0 16px 0; text-transform: uppercase; letter-spacing: 0.05em;">Request Context</h2>
-            <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
-                <tr>
-                    <td style="width: 120px; color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; padding: 8px 0; border-bottom: 1px solid {{ $colors['border'] }}; vertical-align: top;">Method</td>
-                    <td class="info-value" style="color: {{ $colors['text_main'] }}; font-size: 14px; padding: 8px 0; border-bottom: 1px solid {{ $colors['border'] }}; vertical-align: top; word-break: break-all;">{{ $content['method'] ?? 'N/A' }}</td>
-                </tr>
-                <tr>
-                    <td style="width: 120px; color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; padding: 8px 0; border-bottom: 1px solid {{ $colors['border'] }}; vertical-align: top;">URL</td>
-                    <td class="info-value" style="color: {{ $colors['text_main'] }}; font-size: 14px; padding: 8px 0; border-bottom: 1px solid {{ $colors['border'] }}; vertical-align: top; word-break: break-all;">
-                        <a href="{{ $content['url'] ?? '#' }}" style="color: {{ $colors['link'] }}; text-decoration: none;">{{ $content['url'] ?? 'N/A' }}</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width: 120px; color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; padding: 8px 0; border-bottom: 1px solid {{ $colors['border'] }}; vertical-align: top;">IP Address</td>
-                    <td class="info-value" style="color: {{ $colors['text_main'] }}; font-size: 14px; padding: 8px 0; border-bottom: 1px solid {{ $colors['border'] }}; vertical-align: top; word-break: break-all;">{{ $content['ip'] ?? 'N/A' }}</td>
-                </tr>
-            </table>
-        </div>
+            
+            @if($content['is_console'] ?? false)
+                <!-- Console Context -->
+                <div style="margin-bottom: 16px;">
+                    <span style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500;">Context:</span>
+                    <span class="info-value" style="color: {{ $colors['text_main'] }}; font-size: 14px; margin-left: 8px;">CLI</span>
+                </div>
+                
+                @if(!empty($content['command']))
+                <div style="margin-bottom: 16px;">
+                    <div style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px;">CONSOLE_COMMAND</div>
+                    <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['command'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
+                </div>
+                @endif
+                
+                @if(!empty($content['server']))
+                <div style="margin-bottom: 16px;">
+                    <div style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px;">$_SERVER</div>
+                    <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['server'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
+                </div>
+                @endif
+            @else
+                <!-- Web Context -->
+                @if(!empty($content['user']))
+                <div style="margin-bottom: 16px;">
+                    <span style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500;">USER</span><br>
+                    <span class="info-value" style="color: {{ $colors['text_main'] }}; font-size: 14px; word-break: break-all;">"{{ $content['user'] }}"</span>
+                </div>
+                @endif
 
-        <!-- Headers -->
-        @if(!empty($content['headers']))
-        <div style="padding: 24px; border-bottom: 1px solid {{ $colors['border'] }};">
-            <h2 style="font-size: 16px; font-weight: 600; color: {{ $colors['text_main'] }}; margin: 0 0 16px 0; text-transform: uppercase; letter-spacing: 0.05em;">Headers</h2>
-            <div class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; overflow-x: auto; white-space: pre-wrap; margin: 0;">
-@foreach($content['headers'] as $key => $value)
-<span style="color: {{ $colors['link'] }};">{{ $key }}</span>: <span style="color: {{ $colors['text_muted'] }};">{{ $value }}</span><br>
-@endforeach
-            </div>
-        </div>
-        @endif
+                <div style="margin-bottom: 16px;">
+                    <span style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500;">URL</span><br>
+                    <span class="info-value" style="color: {{ $colors['text_main'] }}; font-size: 14px; word-break: break-all;"><a href="{{ $content['url'] ?? '#' }}" style="color: {{ $colors['link'] }}; text-decoration: none;">"{{ $content['url'] ?? 'N/A' }}"</a></span>
+                </div>
 
-        <!-- Body -->
-        @if(!empty($content['body']))
-        <div style="padding: 24px; border-bottom: 1px solid {{ $colors['border'] }};">
-            <h2 style="font-size: 16px; font-weight: 600; color: {{ $colors['text_main'] }}; margin: 0 0 16px 0; text-transform: uppercase; letter-spacing: 0.05em;">Request Body</h2>
-            <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
+                <div style="margin-bottom: 16px;">
+                    <span style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500;">METHOD</span><br>
+                    <span class="info-value" style="color: {{ $colors['text_main'] }}; font-size: 14px;">"{{ $content['method'] ?? 'N/A' }}"</span>
+                </div>
+
+                @if(!empty($content['body']))
+                <div style="margin-bottom: 16px;">
+                    <div style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px;">POST</div>
+                    <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
+                </div>
+                @endif
+
+                @if(!empty($content['headers']))
+                <div style="margin-bottom: 16px;">
+                    <div style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px;">HEADER</div>
+                    <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['headers'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
+                </div>
+                @endif
+
+                @if(!empty($content['cookie']))
+                <div style="margin-bottom: 16px;">
+                    <div style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px;">COOKIE</div>
+                    <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['cookie'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
+                </div>
+                @endif
+
+                @if(!empty($content['server']))
+                <div style="margin-bottom: 16px;">
+                    <div style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px;">$_SERVER</div>
+                    <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['server'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
+                </div>
+                @endif
+            @endif
         </div>
-        @endif
 
         <!-- Stack Trace -->
         <div style="padding: 24px; border-bottom: 1px solid {{ $colors['border'] }};">

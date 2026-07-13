@@ -142,7 +142,68 @@ class ErrorMailerTest extends TestCase
             return $mail->content['ip'] === '192.168.1.1' &&
                    $mail->content['method'] === 'POST' &&
                    $mail->content['body'] === ['foo' => 'bar'] &&
-                   strtolower($mail->content['headers']['x-test-header']) === strtolower('TestValue');
+                   $mail->content['headers']['x-test-header'][0] === 'TestValue';
+        });
+    }
+
+    public function test_it_captures_user_context()
+    {
+        Config::set('error-mailer.enabled', true);
+
+        // Force runningInConsole to false
+        $app = app();
+        $reflection = new \ReflectionClass($app);
+        if ($reflection->hasProperty('isRunningInConsole')) {
+            $property = $reflection->getProperty('isRunningInConsole');
+            $property->setAccessible(true);
+            $property->setValue($app, false);
+        } elseif ($reflection->hasProperty('runningInConsole')) {
+            $property = $reflection->getProperty('runningInConsole');
+            $property->setAccessible(true);
+            $property->setValue($app, false);
+        }
+
+        $request = request();
+
+        // 1. Test with email and name
+        $request->setUserResolver(function () {
+            $user = new \stdClass();
+            $user->name = 'John Doe';
+            $user->email = 'john@example.com';
+            return $user;
+        });
+
+        ErrorMailer::handle(new Exception('HTTP error 1'));
+
+        Mail::assertQueued(ExceptionOccurred::class, function ($mail) {
+            $mail->build();
+            return $mail->content['user'] === 'John Doe (john@example.com)';
+        });
+
+        // 2. Test with ID only
+        $request->setUserResolver(function () {
+            $user = new \stdClass();
+            $user->id = 123;
+            return $user;
+        });
+
+        ErrorMailer::handle(new Exception('HTTP error 2'));
+
+        Mail::assertQueued(ExceptionOccurred::class, function ($mail) {
+            $mail->build();
+            return $mail->content['user'] === 'ID: 123';
+        });
+
+        // 3. Test with basic authenticated user (no specific attributes)
+        $request->setUserResolver(function () {
+            return new \stdClass();
+        });
+
+        ErrorMailer::handle(new Exception('HTTP error 3'));
+
+        Mail::assertQueued(ExceptionOccurred::class, function ($mail) {
+            $mail->build();
+            return $mail->content['user'] === 'Authenticated User';
         });
     }
 }

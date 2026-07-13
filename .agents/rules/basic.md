@@ -13,7 +13,7 @@
 ## Testing
 *   **Framework:** PHPUnit.
 *   **Coverage:** Aim for 100% test coverage. Every new feature or bugfix must include corresponding tests.
-*   **Running Tests:** Use `php vendor/bin/phpunit` or `composer test`. To run with coverage, use `XDEBUG_MODE=coverage php vendor/bin/phpunit --coverage-text`.
+*   **Running Tests:** Use `composer test` or `./vendor/bin/phpunit`. To run with coverage, use `./vendor/bin/phpunit --coverage-text` (ensure PCOV or Xdebug is enabled in your PHP environment).
 
 ## Architecture & Email Design
 *   **Email Templates:** Keep email templates safe for strict email clients. Use inline CSS and HTML tables where necessary, and avoid JavaScript or external stylesheets.

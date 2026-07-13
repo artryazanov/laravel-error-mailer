@@ -73,22 +73,39 @@ class ErrorMailer
 
         // Get request details safely (can be called in console commands where request() might not have URL/IP)
         if (app()->runningInConsole()) {
+            $content['is_console'] = true;
             $content['url'] = 'Command Line / Artisan';
             $content['method'] = 'CLI';
             $content['ip'] = '127.0.0.1';
             $content['body'] = [];
             $content['headers'] = [];
+            $content['command'] = $_SERVER['argv'] ?? [];
+            $content['server'] = $_SERVER ?? [];
         } else {
+            $content['is_console'] = false;
             $content['url'] = request()->fullUrl();
             $content['method'] = request()->method();
             $content['ip'] = request()->ip();
             $content['body'] = request()->all();
+            $content['headers'] = request()->headers->all();
+            $content['cookie'] = request()->cookie();
+            $content['server'] = $_SERVER ?? [];
 
-            $headers = [];
-            foreach (request()->headers->all() as $key => $value) {
-                $headers[$key] = implode(', ', $value);
+            $user = request()->user();
+            if ($user) {
+                $userStr = '';
+                if (isset($user->email)) {
+                    $userStr = "({$user->email})";
+                    if (isset($user->name)) {
+                        $userStr = "{$user->name} {$userStr}";
+                    }
+                } elseif (isset($user->id)) {
+                    $userStr = "ID: {$user->id}";
+                } else {
+                    $userStr = "Authenticated User";
+                }
+                $content['user'] = trim($userStr);
             }
-            $content['headers'] = $headers;
         }
 
         // Include previous exception details if present (sanitized)
@@ -133,18 +150,42 @@ class ErrorMailer
         $md .= 'Laravel '.app()->version()."\n\n";
 
         $md .= "## Request Context\n\n";
-        $md .= '**Method:** '.($content['method'] ?? 'N/A')."\n";
-        $md .= '**URL:** '.($content['url'] ?? 'N/A')."\n";
-        $md .= '**IP Address:** '.($content['ip'] ?? 'N/A')."\n\n";
 
-        if (! empty($content['headers'])) {
-            $md .= "## Headers\n\n```json\n";
-            $md .= json_encode($content['headers'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
-        }
+        if ($content['is_console'] ?? false) {
+            if (!empty($content['command'])) {
+                $md .= "### CONSOLE_COMMAND\n\n```json\n";
+                $md .= json_encode($content['command'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
+            }
+            if (!empty($content['server'])) {
+                $md .= "### \$_SERVER\n\n```json\n";
+                $md .= json_encode($content['server'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
+            }
+        } else {
+            if (!empty($content['user'])) {
+                $md .= "### USER\n\n\"{$content['user']}\"\n\n";
+            }
+            $md .= "### URL\n\n\"".($content['url'] ?? 'N/A')."\"\n\n";
+            $md .= "### METHOD\n\n\"".($content['method'] ?? 'N/A')."\"\n\n";
 
-        if (! empty($content['body'])) {
-            $md .= "## Request Body\n\n```json\n";
-            $md .= json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
+            if (!empty($content['body'])) {
+                $md .= "### POST\n\n```json\n";
+                $md .= json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
+            }
+
+            if (!empty($content['headers'])) {
+                $md .= "### HEADER\n\n```json\n";
+                $md .= json_encode($content['headers'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
+            }
+
+            if (!empty($content['cookie'])) {
+                $md .= "### COOKIE\n\n```json\n";
+                $md .= json_encode($content['cookie'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
+            }
+
+            if (!empty($content['server'])) {
+                $md .= "### \$_SERVER\n\n```json\n";
+                $md .= json_encode($content['server'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n```\n\n";
+            }
         }
 
         $md .= "## Stack Trace\n\n";
@@ -165,19 +206,6 @@ class ErrorMailer
                 $line = $frame['line'] ?? '';
                 $md .= "{$index} - {$file}:{$line}\n";
             }
-        }
-
-        if (! empty($content['headers'])) {
-            $md .= "\n## Headers\n\n";
-            foreach ($content['headers'] as $key => $value) {
-                $md .= "* **{$key}**: {$value}\n";
-            }
-        }
-
-        if (! empty($content['body'])) {
-            $md .= "\n## Request Body\n\n```json\n";
-            $md .= json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n";
-            $md .= "```\n";
         }
 
         return $md;
