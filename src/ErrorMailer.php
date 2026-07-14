@@ -59,6 +59,11 @@ class ErrorMailer
         $content['file'] = $exception->getFile();
         $content['line'] = $exception->getLine();
 
+        $content['app_name'] = config('app.name', 'Laravel');
+        $content['app_env'] = config('app.env', 'production');
+        $content['php_version'] = PHP_VERSION;
+        $content['laravel_version'] = app()->version();
+
         // Sanitize trace to serializable, minimal fields used by the view
         $content['trace'] = collect($exception->getTrace())
             ->map(function ($frame) {

@@ -63,12 +63,23 @@ return [
     | Exception Email Subject
     |--------------------------------------------------------------------------
     |
-    | This is the subject of the exception email. A hash of the exception message
-    | will be appended to this subject.
+    | This is the subject of the exception email.
     |
     */
 
     'subject' => env('ERROR_MAILER_SUBJECT', 'Error on '.env('APP_NAME', 'Laravel').' ('.env('APP_ENV', 'production').')'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Exception Email Include Hash
+    |--------------------------------------------------------------------------
+    |
+    | Whether to append a hash of the exception message to the subject.
+    | Useful for some email clients to group similar errors.
+    |
+    */
+
+    'include_hash_in_subject' => env('ERROR_MAILER_INCLUDE_HASH_IN_SUBJECT', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -81,18 +92,6 @@ return [
     */
 
     'view' => env('ERROR_MAILER_VIEW', 'error-mailer::emails.exception'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Exception Email Theme
-    |--------------------------------------------------------------------------
-    |
-    | This is the theme that will be used for the email.
-    | Supported values: "light", "dark".
-    |
-    */
-
-    'theme' => env('ERROR_MAILER_THEME', 'light'),
 
     /*
     |--------------------------------------------------------------------------

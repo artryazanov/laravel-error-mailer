@@ -1,197 +1,190 @@
-@php
-$theme = config('error-mailer.theme', 'light');
-
-$colors = $theme === 'dark' ? [
-    'bg' => '#0f172a',
-    'container_bg' => '#1e293b',
-    'text_main' => '#f8fafc',
-    'text_muted' => '#94a3b8',
-    'accent_red' => '#ef4444',
-    'accent_red_bg' => 'rgba(239, 68, 68, 0.1)',
-    'accent_red_border' => 'rgba(239, 68, 68, 0.3)',
-    'border' => '#334155',
-    'code_bg' => '#0f172a',
-    'link' => '#38bdf8',
-    'badge_bg' => '#334155',
-    'badge_text' => '#e2e8f0',
-    'json_text' => '#a78bfa',
-    'line_num' => '#cbd5e1',
-] : [
-    'bg' => '#f3f4f6',          
-    'container_bg' => '#ffffff',
-    'text_main' => '#111827',   
-    'text_muted' => '#6b7280',  
-    'accent_red' => '#dc2626',  
-    'accent_red_bg' => '#fef2f2',
-    'accent_red_border' => '#fca5a5',
-    'border' => '#e5e7eb',      
-    'code_bg' => '#f9fafb',     
-    'link' => '#0284c7',        
-    'badge_bg' => '#f3f4f6',    
-    'badge_text' => '#374151',  
-    'json_text' => '#7c3aed',   
-    'line_num' => '#9ca3af',
-];
-@endphp
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exception Occurred</title>
-    <style>
-        /* Email client safe reset */
-        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
-        img { -ms-interpolation-mode: bicubic; }
-        img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
-        table { border-collapse: collapse !important; }
-        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
-        
-        .exception-class { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-        .info-value { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-        .json-block { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-        .trace-method { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-        .trace-file { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-        .markdown-content { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-    </style>
-</head>
-<body style="background-color: {{ $colors['bg'] }}; color: {{ $colors['text_main'] }}; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.5; margin: 0; padding: 20px; -webkit-font-smoothing: antialiased;">
-    <div style="max-width: 800px; margin: 0 auto; background-color: {{ $colors['container_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
-        
-        <!-- Header / Exception Info -->
-        <div style="background-color: {{ $colors['bg'] }}; border-bottom: 1px solid {{ $colors['border'] }}; padding: 24px;">
-            <h1 style="font-size: 24px; font-weight: 700; color: {{ $colors['accent_red'] }}; margin: 0 0 8px 0; line-height: 1.3;">
-                {{ $content['message'] ?? 'An error occurred' }}
-            </h1>
-            <p class="exception-class" style="font-size: 14px; color: {{ $colors['text_main'] }}; font-weight: 600; margin: 0 0 12px 0; word-break: break-all;">
-                {{ $content['class'] ?? 'Exception' }}
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="robots" content="noindex,nofollow" />
+        <style>
+            body { background-color: #F9F9F9; color: #222; font: 14px/1.4 Helvetica, Arial, sans-serif; margin: 0; padding-bottom: 45px; }
+            a { cursor: pointer; text-decoration: none; }
+            a:hover { text-decoration: underline; }
+            abbr[title] { border-bottom: none; cursor: help; text-decoration: none; }
+            code, pre { font: 13px/1.5 Consolas, Monaco, Menlo, "Ubuntu Mono", "Liberation Mono", monospace; }
+            table, tr, th, td { background: #FFF; border-collapse: collapse; vertical-align: top; }
+            table { background: #FFF; border: 1px solid #E0E0E0; box-shadow: 0px 0px 1px rgba(128, 128, 128, .2); margin: 1em 0; width: 100%; }
+            table th, table td { border: solid #E0E0E0; border-width: 1px 0; padding: 8px 10px; }
+            table th { background-color: #E0E0E0; font-weight: bold; text-align: left; }
+            .hidden-xs-down { display: none; }
+            .block { display: block; }
+            .break-long-words { -ms-word-break: break-all; word-break: break-all; word-break: break-word; -webkit-hyphens: auto; -moz-hyphens: auto; hyphens: auto; }
+            .text-muted { color: #999; }
+            .container { max-width: 1024px; margin: 0 auto; padding: 0 15px; }
+            .container::after { content: ""; display: table; clear: both; }
+            .exception-summary { background: #B0413E; border-bottom: 2px solid rgba(0, 0, 0, 0.1); border-top: 1px solid rgba(0, 0, 0, .3); flex: 0 0 auto; margin-bottom: 30px; }
+            .exception-message-wrapper { display: flex; align-items: center; min-height: 70px; }
+            .exception-message { flex-grow: 1; padding: 30px 0; }
+            .exception-message, .exception-message a { color: #FFF; font-size: 21px; font-weight: 400; margin: 0; }
+            .exception-message.long { font-size: 18px; }
+            .exception-message a { border-bottom: 1px solid rgba(255, 255, 255, 0.5); font-size: inherit; text-decoration: none; }
+            .exception-message a:hover { border-bottom-color: #ffffff; }
+            .exception-illustration { flex-basis: 111px; flex-shrink: 0; height: 66px; margin-left: 15px; opacity: .7; }
+            .trace + .trace { margin-top: 30px; }
+            .trace-head .trace-class { color: #222; font-size: 18px; font-weight: bold; line-height: 1.3; margin: 0; position: relative; }
+            .trace-message { font-size: 14px; font-weight: normal; margin: .5em 0 0; }
+            .trace-file-path, .trace-file-path a { color: #222; margin-top: 3px; font-size: 13px; }
+            .trace-class { color: #B0413E; }
+            .trace-type { padding: 0 2px; }
+            .trace-method { color: #B0413E; font-weight: bold; }
+            .trace-arguments { color: #777; font-weight: normal; padding-left: 2px; }
+            @media (min-width: 575px) {
+                .hidden-xs-down { display: initial; }
+            }</style>
+    </head>
+    <body>
+        <div class="exception-summary">
+            <div class="container">
+                <div class="exception-message-wrapper">
+                    <h1 class="break-long-words exception-message">{{ $content['message'] ?? '' }}</h1>
+                    <div class="exception-illustration hidden-xs-down"></div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <p class="text-muted" style="margin-bottom: 20px;">
+                <strong>Project:</strong> {{ $content['app_name'] ?? 'Laravel' }} &middot; 
+                <strong>Environment:</strong> {{ $content['app_env'] ?? 'production' }} &middot; 
+                <strong>PHP:</strong> {{ $content['php_version'] ?? '' }} &middot; 
+                <strong>Laravel:</strong> {{ $content['laravel_version'] ?? '' }}
             </p>
-            <div style="color: {{ $colors['text_muted'] }}; font-size: 12px;">
-                {{ config('app.name', 'Laravel') }} &middot; {{ config('app.env', 'production') }}<br>
-                PHP {{ PHP_VERSION }} &middot; Laravel {{ app()->version() }}
-            </div>
-        </div>
-
-        <!-- Request Context -->
-        <div style="padding: 24px; border-bottom: 1px solid {{ $colors['border'] }};">
-            <h2 style="font-size: 16px; font-weight: 600; color: {{ $colors['text_main'] }}; margin: 0 0 16px 0; text-transform: uppercase; letter-spacing: 0.05em;">Request Context</h2>
-            
-            @if($content['is_console'] ?? false)
-                <!-- Console Context -->
-                <div style="margin-bottom: 16px;">
-                    <span style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500;">Context:</span>
-                    <span class="info-value" style="color: {{ $colors['text_main'] }}; font-size: 14px; margin-left: 8px;">CLI</span>
-                </div>
-                
-                @if(!empty($content['command']))
-                <div style="margin-bottom: 16px;">
-                    <div style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px;">CONSOLE_COMMAND</div>
-                    <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['command'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
-                </div>
-                @endif
-                
-                @if(!empty($content['server']))
-                <details style="margin-bottom: 16px;">
-                    <summary style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px; cursor: pointer;">$_SERVER</summary>
-                    <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['server'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
-                </details>
-                @endif
-            @else
-                <!-- Web Context -->
-                @if(!empty($content['user']))
-                <div style="margin-bottom: 16px;">
-                    <span style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500;">USER</span><br>
-                    <span class="info-value" style="color: {{ $colors['text_main'] }}; font-size: 14px; word-break: break-all;">"{{ $content['user'] }}"</span>
-                </div>
-                @endif
-
-                <div style="margin-bottom: 16px;">
-                    <span style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500;">URL</span><br>
-                    <span class="info-value" style="color: {{ $colors['text_main'] }}; font-size: 14px; word-break: break-all;"><a href="{{ $content['url'] ?? '#' }}" style="color: {{ $colors['link'] }}; text-decoration: none;">"{{ $content['url'] ?? 'N/A' }}"</a></span>
-                </div>
-
-                <div style="margin-bottom: 16px;">
-                    <span style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500;">METHOD</span><br>
-                    <span class="info-value" style="color: {{ $colors['text_main'] }}; font-size: 14px;">"{{ $content['method'] ?? 'N/A' }}"</span>
-                </div>
-
-                @if(!empty($content['body']))
-                <div style="margin-bottom: 16px;">
-                    <div style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px;">BODY</div>
-                    <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
-                </div>
-                @endif
-
-                @if(!empty($content['headers']))
-                <details style="margin-bottom: 16px;">
-                    <summary style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px; cursor: pointer;">HEADER</summary>
-                    <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['headers'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
-                </details>
-                @endif
-
-                @if(!empty($content['cookie']))
-                <details style="margin-bottom: 16px;">
-                    <summary style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px; cursor: pointer;">COOKIE</summary>
-                    <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['cookie'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
-                </details>
-                @endif
-
-                @if(!empty($content['server']))
-                <details style="margin-bottom: 16px;">
-                    <summary style="color: {{ $colors['text_muted'] }}; font-size: 14px; font-weight: 500; margin-bottom: 8px; cursor: pointer;">$_SERVER</summary>
-                    <pre class="json-block" style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; border-radius: 6px; padding: 16px; font-size: 13px; color: {{ $colors['json_text'] }}; margin: 0; overflow-x: auto;">{{ json_encode($content['server'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
-                </details>
-                @endif
-            @endif
-        </div>
-
-        <!-- Stack Trace -->
-        <div style="padding: 24px; border-bottom: 1px solid {{ $colors['border'] }};">
-            <h2 style="font-size: 16px; font-weight: 600; color: {{ $colors['text_main'] }}; margin: 0 0 16px 0; text-transform: uppercase; letter-spacing: 0.05em;">Stack Trace</h2>
-            
-            <!-- Exception Location -->
-            <div style="background-color: {{ $colors['accent_red_bg'] }}; border: 1px solid {{ $colors['accent_red_border'] }}; margin-bottom: 12px; padding: 12px; border-radius: 6px;">
-                <div class="trace-file" style="color: {{ $colors['text_main'] }}; font-size: 13px; word-break: break-all;">
-                    {{ $content['file'] ?? '' }}:<span style="color: {{ $colors['accent_red'] }}; font-weight: bold;">{{ $content['line'] ?? '' }}</span>
-                </div>
-            </div>
-
-            <!-- Trace Frames -->
-            @foreach(array_slice($content['trace'] ?? [], 0, 20) as $index => $frame)
-            <div style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; margin-bottom: 12px; padding: 12px; border-radius: 6px;">
-                <div class="trace-method" style="color: {{ $colors['link'] }}; font-weight: 600; font-size: 14px; margin-bottom: 4px; word-break: break-all;">
-                    {{ !empty($frame['class']) ? $frame['class'].'->' : '' }}{{ $frame['function'] ?? '' }}()
-                </div>
-                <div class="trace-file" style="color: {{ $colors['text_muted'] }}; font-size: 13px; word-break: break-all;">
-                    @if(isset($frame['file']))
-                        @php
-                            $isVendor = str_contains($frame['file'], '/vendor/');
-                        @endphp
-                        {{ $frame['file'] }}:<span style="color: {{ $colors['line_num'] }}; font-weight: 600;">{{ $frame['line'] ?? '' }}</span>
-                        @if($isVendor)
-                            <span style="background-color: {{ $colors['badge_bg'] }}; color: {{ $colors['badge_text'] }}; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-left: 8px; vertical-align: middle;">vendor</span>
+            <div class="trace trace-as-html">
+                <table class="trace-details">
+                    <thead class="trace-head"><tr><th>
+                        <h3 class="trace-class">
+                            <span class="text-muted">(1/1)</span>
+                            <span class="exception_title"><span title="{{ $content['class'] ?? 'Exception' }}">{{ basename($content['class'] ?? 'Exception') }}</span></span>
+                        </h3>
+                        <p class="break-long-words trace-message">{{ $content['message'] ?? '' }}</p>
+                        @if($content['is_console'] ?? false)
+                            <p class="">Command: {{ implode(' ', $content['command'] ?? []) }}</p>
+                        @else
+                            <p class="">URL: <span style="font-weight: bold;">[{{ $content['method'] ?? 'GET' }}]</span> {{ $content['url'] ?? '' }}</p>
+                            <p class="">IP: {{ $content['ip'] ?? '' }}</p>
+                            @if(!empty($content['body']) && in_array($content['method'] ?? 'GET', ['POST', 'PUT', 'PATCH', 'DELETE']))
+                                <div>
+                                    <p class="" style="margin-bottom: 2px;">Payload:</p>
+                                    <pre style="background: #f4f4f4; padding: 8px; border: 1px solid #ddd; margin-top: 0; font-size: 12px; max-width: 100%; overflow-x: auto;">{{ json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                                </div>
+                            @endif
                         @endif
-                    @else
-                        [internal function]
-                    @endif
+                    </th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span class="block trace-file-path">in <span title="{{ $content['file'] ?? '' }}"><strong>{{ $content['file'] ?? '' }}</strong> line {{ $content['line'] ?? '' }}</span></span>
+                            </td>
+                        </tr>
+                        @foreach(($content['trace'] ?? []) as $value)
+                            <tr>
+                                <td>
+                                    at <span class="trace-class"><span title="{{ $value['class'] ?? '' }}">{{ basename($value['class'] ?? '') }}</span></span><span class="trace-type">{{ !empty($value['class']) ? '->' : '' }}</span><span class="trace-method">{{ $value['function'] ?? '' }}</span>(<span class="trace-arguments"></span>)<span class="block trace-file-path">in <span title=""><strong>{{ $value['file'] ?? '' }}</strong> line {{ $value['line'] ?? '' }}</span></span>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            @if(!empty($content['previous']))
+            <div class="trace trace-as-html">
+                <table class="trace-details">
+                    <thead class="trace-head"><tr><th>
+                        <h3 class="trace-class">
+                            <span class="text-muted">(Previous)</span>
+                            <span class="exception_title"><span title="Previous Exception">Previous Exception</span></span>
+                        </h3>
+                        <p class="break-long-words trace-message">{{ $content['previous']['message'] ?? '' }}</p>
+                        @if($content['is_console'] ?? false)
+                            <p class="">Command: {{ implode(' ', $content['command'] ?? []) }}</p>
+                        @else
+                            <p class="">URL: <span style="font-weight: bold;">[{{ $content['method'] ?? 'GET' }}]</span> {{ $content['url'] ?? '' }}</p>
+                            <p class="">IP: {{ $content['ip'] ?? '' }}</p>
+                            @if(!empty($content['body']) && in_array($content['method'] ?? 'GET', ['POST', 'PUT', 'PATCH', 'DELETE']))
+                                <div>
+                                    <p class="" style="margin-bottom: 2px;">Payload:</p>
+                                    <pre style="background: #f4f4f4; padding: 8px; border: 1px solid #ddd; margin-top: 0; font-size: 12px; max-width: 100%; overflow-x: auto;">{{ json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                                </div>
+                            @endif
+                        @endif
+                    </th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span class="block trace-file-path">in <span title="{{ $content['previous']['file'] ?? '' }}"><strong>{{ $content['previous']['file'] ?? '' }}</strong> line {{ $content['previous']['line'] ?? '' }}</span></span>
+                            </td>
+                        </tr>
+                        @foreach(($content['previous']['trace'] ?? []) as $value)
+                            <tr>
+                                <td>
+                                    at <span class="trace-class"><span title="{{ $value['class'] ?? '' }}">{{ basename($value['class'] ?? '') }}</span></span><span class="trace-type">{{ !empty($value['class']) ? '->' : '' }}</span><span class="trace-method">{{ $value['function'] ?? '' }}</span>(<span class="trace-arguments"></span>)<span class="block trace-file-path">in <span title=""><strong>{{ $value['file'] ?? '' }}</strong> line {{ $value['line'] ?? '' }}</span></span>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @endif
+
+            @if(!($content['is_console'] ?? false))
+                <div class="trace trace-as-html" style="margin-top: 30px;">
+                    <table class="trace-details">
+                        <thead class="trace-head"><tr><th>
+                            <h3 class="trace-class">
+                                <span class="text-muted">Headers</span>
+                            </h3>
+                        </th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <pre style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd; margin: 0; font-size: 12px; max-width: 100%; overflow-x: auto;">{{ json_encode($content['headers'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-            @endforeach
-        </div>
 
-        <!-- Markdown Copy Block -->
-        @if(!empty($content['markdown']))
-        <div style="padding: 24px; background-color: {{ $colors['container_bg'] }}; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
-            <div style="margin-bottom: 16px;">
-                <h2 style="display: inline-block; font-size: 16px; font-weight: 600; color: {{ $colors['text_main'] }}; margin: 0; text-transform: uppercase; letter-spacing: 0.05em;">Short Markdown Representation</h2>
-            </div>
-            <div style="background-color: {{ $colors['code_bg'] }}; border: 1px solid {{ $colors['border'] }}; padding: 16px; border-radius: 6px; overflow-x: auto;">
-                <pre class="markdown-content" style="color: {{ $colors['text_muted'] }}; font-size: 12px; white-space: pre-wrap; margin: 0; line-height: 1.5;">{{ $content['markdown'] }}</pre>
+                <div class="trace trace-as-html" style="margin-top: 30px;">
+                    <table class="trace-details">
+                        <thead class="trace-head"><tr><th>
+                            <h3 class="trace-class">
+                                <span class="text-muted">Cookies</span>
+                            </h3>
+                        </th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <pre style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd; margin: 0; font-size: 12px; max-width: 100%; overflow-x: auto;">{{ json_encode($content['cookie'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+
+            <div class="trace trace-as-html" style="margin-top: 30px;">
+                <table class="trace-details">
+                    <thead class="trace-head"><tr><th>
+                        <h3 class="trace-class">
+                            <span class="text-muted">$_SERVER Context</span>
+                        </h3>
+                    </th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <pre style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd; margin: 0; font-size: 12px; max-width: 100%; overflow-x: auto;">{{ json_encode($content['server'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-        @endif
-
-    </div>
-</body>
+    </body>
 </html>

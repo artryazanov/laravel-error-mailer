@@ -7,16 +7,16 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/artryazanov/laravel-error-mailer.svg?style=flat-square)](https://packagist.org/packages/artryazanov/laravel-error-mailer)
 [![License](https://img.shields.io/github/license/artryazanov/laravel-error-mailer.svg?style=flat-square)](https://github.com/artryazanov/laravel-error-mailer/blob/main/LICENSE)
 
-Laravel 11-13 package to automatically send detailed exception reports to configured email addresses. Features a beautiful, themeable (light/dark) HTML template (inspired by the Laravel 13 default error page) that includes your application's name and environment, full stack traces, comprehensive context data, a copyable Markdown representation block, and built-in rate limiting to prevent spamming your inbox when your application throws repeated errors.
+Laravel 11-13 package to automatically send detailed exception reports to configured email addresses. Features a clean HTML template that includes your application's name and environment, full stack traces, comprehensive context data, a copyable Markdown representation block, and built-in rate limiting to prevent spamming your inbox when your application throws repeated errors.
 
 ## ✨ Features
-- **Beautiful HTML Template:** Themeable (light & dark modes) inspired by Laravel's modern error pages.
+- **Clean HTML Template:** A clear and readable layout for error reporting.
 - **Comprehensive Context Capture:**
   - **Web Requests:** URL, Method, User info, Request Body, Headers, Cookies, and `$_SERVER` array.
   - **Console Commands (CLI):** Command arguments and `$_SERVER` array.
 - **Short Markdown Representation:** A built-in, copyable Markdown block containing the basic request context and stack trace for easy pasting into Jira, GitHub Issues, etc.
 - **Rate Limiting:** Protects your inbox from spam when a recurring error floods your application.
-- **Smart Email Subjects:** The error message is automatically appended to the email subject line (and truncated if too long), making it easy to identify the error at a glance.
+- **Smart Email Subjects:** The error message is automatically appended to the email subject line (and truncated if too long), making it easy to identify the error at a glance. An optional short hash can be enabled to group similar errors.
 - **Previous Exceptions:** Automatically unwraps and displays previous exceptions in the chain.
 ## 📋 Requirements
 - PHP 8.2+
@@ -54,7 +54,9 @@ ERROR_MAILER_BCC=
 # Optional: Override the default subject "Error on {APP_NAME} ({APP_ENV})"
 # The exact error message is automatically appended to the subject in either case.
 ERROR_MAILER_SUBJECT="Error on production"
-ERROR_MAILER_THEME=light # "light" or "dark"
+
+# Optional: Append a hash of the exception message to the subject (useful for email clients grouping). Defaults to false.
+ERROR_MAILER_INCLUDE_HASH_IN_SUBJECT=false
 
 # Rate limit: Max emails to send per time window (in seconds)
 ERROR_MAILER_LIMIT=15

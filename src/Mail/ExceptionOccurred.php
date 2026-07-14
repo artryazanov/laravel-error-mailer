@@ -85,6 +85,10 @@ class ExceptionOccurred extends Mailable implements ShouldQueue
             $finalSubject .= ': '.$shortMessage;
         }
 
-        return $finalSubject.' ['.$hash.']';
+        if (config('error-mailer.include_hash_in_subject', false)) {
+            $finalSubject .= ' ['.$hash.']';
+        }
+
+        return $finalSubject;
     }
 }

@@ -13,6 +13,7 @@ class ExceptionOccurredTest extends TestCase
         Config::set('error-mailer.from', 'system@example.com');
         Config::set('error-mailer.to', 'admin@example.com');
         Config::set('error-mailer.subject', 'Site Error');
+        Config::set('error-mailer.include_hash_in_subject', true);
         Config::set('error-mailer.view', 'error-mailer::emails.exception');
 
         $content = [
@@ -31,6 +32,25 @@ class ExceptionOccurredTest extends TestCase
         $this->assertTrue($mailable->hasFrom('system@example.com'));
         $this->assertTrue($mailable->hasTo('admin@example.com'));
         $this->assertEquals('error-mailer::emails.exception', $mailable->view);
+    }
+
+    public function test_mailable_builds_correctly_without_hash_subject_by_default()
+    {
+        Config::set('error-mailer.from', 'system@example.com');
+        Config::set('error-mailer.to', 'admin@example.com');
+        Config::set('error-mailer.subject', 'Site Error');
+        Config::set('error-mailer.view', 'error-mailer::emails.exception');
+
+        $content = [
+            'message' => 'Something went wrong',
+            'file' => 'test.php',
+            'line' => 123,
+        ];
+
+        $mailable = new ExceptionOccurred($content);
+        $mailable->build();
+
+        $this->assertEquals("Site Error: Something went wrong", $mailable->subject);
     }
 
     public function test_it_parses_comma_separated_emails()
