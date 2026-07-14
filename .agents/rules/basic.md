@@ -20,4 +20,3 @@
 *   **Email Templates:** Keep email templates safe for strict email clients. Use inline CSS and avoid JavaScript or external stylesheets.
 *   **Dependencies:** Minimize external dependencies to keep the package lightweight.
 *   **Configuration:** Provide sensible defaults in the configuration file (`config/error-mailer.php`) and document all ENV variables.
-*   **Consistency:** Keep the structure, order of information, and presented data consistent between the HTML email view (`exception.blade.php`) and the Markdown representation (`generateMarkdown()`). Note that the Markdown representation is considered a "Short" version and explicitly omits verbose blocks (like `HEADER`, `COOKIE`, and `$_SERVER`) to remain compact.
