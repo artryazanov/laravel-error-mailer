@@ -50,7 +50,7 @@ class ExceptionOccurredTest extends TestCase
         $mailable = new ExceptionOccurred($content);
         $mailable->build();
 
-        $this->assertEquals("Site Error: Something went wrong", $mailable->subject);
+        $this->assertEquals('Site Error: Something went wrong', $mailable->subject);
     }
 
     public function test_it_parses_comma_separated_emails()
