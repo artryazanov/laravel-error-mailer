@@ -1,0 +1,22 @@
+services:
+  mailpit:
+    image: 'axllent/mailpit:latest'
+    ports:
+      # SMTP port - use this in your Laravel test scripts or app
+      - '11025:1025'
+      # Web UI port - open this in your browser to view emails
+      - '18025:8025'
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATA_FILE: /data/mailpit.db
+    volumes:
+      - mailpit-data:/data
+    networks:
+      - mail-network
+
+volumes:
+  mailpit-data:
+
+networks:
+  mail-network:
+    driver: bridge

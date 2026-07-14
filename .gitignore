@@ -25,3 +25,10 @@ coverage.xml
 Thumbs.db
 *.swp
 *~
+
+# Local Previews & Artifacts
+*.eml
+preview.html
+/workbench/
+/storage/
+*.log

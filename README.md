@@ -103,6 +103,20 @@ This package has built-in Rate Limiting to protect your inbox. By default, it al
 
 You can tweak the threshold in your `.env` using `ERROR_MAILER_LIMIT` and `ERROR_MAILER_WINDOW`.
 
+## 🧪 Local Testing & Preview
+
+If you want to see exactly how the generated emails look without deploying to a live server, this package includes a convenient Docker-based preview script using [Mailpit](https://mailpit.axllent.org/).
+
+1. Start the Mailpit Docker container:
+   ```bash
+   docker compose up -d
+   ```
+2. Run the preview script to simulate an exception and send the email:
+   ```bash
+   php preview-docker.php
+   ```
+3. Open your browser and navigate to **http://localhost:18025** to view the rendered HTML email in Mailpit's beautiful web interface.
+
 ## 🎨 Customizing the View
 
 If you published the views, you can find the HTML email template in `resources/views/vendor/error-mailer/emails/exception.blade.php`. You can modify it to match your company's branding, adjust the layout, or include additional variables.
