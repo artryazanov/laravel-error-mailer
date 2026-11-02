@@ -59,8 +59,8 @@
                 <table class="trace-details">
                     <thead class="trace-head"><tr><th>
                         <h3 class="trace-class">
-                            <span class="text-muted">(1/1)</span>
-                            <span class="exception_title"><span title="{{ $content['class'] ?? 'Exception' }}">{{ basename($content['class'] ?? 'Exception') }}</span></span>
+                            <span class="text-muted">{{ !empty($content['previous']) ? '(1/2)' : '(1/1)' }}</span>
+                            <span class="exception_title"><span title="{{ $content['class'] ?? 'Exception' }}">{{ class_basename($content['class'] ?? 'Exception') }}</span></span>
                         </h3>
                         <p class="break-long-words trace-message">{{ $content['message'] ?? '' }}</p>
                         @if($content['is_console'] ?? false)
@@ -68,10 +68,13 @@
                         @else
                             <p class="">URL: <span style="font-weight: bold;">[{{ $content['method'] ?? 'GET' }}]</span> {{ $content['url'] ?? '' }}</p>
                             <p class="">IP: {{ $content['ip'] ?? '' }}</p>
+                            @if(!empty($content['user']))
+                                <p class="">User: {{ $content['user'] }}</p>
+                            @endif
                             @if(!empty($content['body']) && in_array($content['method'] ?? 'GET', ['POST', 'PUT', 'PATCH', 'DELETE']))
                                 <div>
                                     <p class="" style="margin-bottom: 2px;">Payload:</p>
-                                    <pre style="background: #f4f4f4; padding: 8px; border: 1px solid #ddd; margin-top: 0; font-size: 12px; max-width: 100%; overflow-x: auto;">{{ json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                                    <pre style="background: #f4f4f4; padding: 8px; border: 1px solid #ddd; margin-top: 0; font-size: 12px; max-width: 100%; overflow-x: auto;">{{ json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE) }}</pre>
                                 </div>
                             @endif
                         @endif
@@ -85,7 +88,12 @@
                         @foreach(($content['trace'] ?? []) as $value)
                             <tr>
                                 <td>
-                                    at <span class="trace-class"><span title="{{ $value['class'] ?? '' }}">{{ basename($value['class'] ?? '') }}</span></span><span class="trace-type">{{ !empty($value['class']) ? '->' : '' }}</span><span class="trace-method">{{ $value['function'] ?? '' }}</span>(<span class="trace-arguments"></span>)<span class="block trace-file-path">in <span title=""><strong>{{ $value['file'] ?? '' }}</strong> line {{ $value['line'] ?? '' }}</span></span>
+                                    at <span class="trace-class"><span title="{{ $value['class'] ?? '' }}">{{ class_basename($value['class'] ?? '') }}</span></span><span class="trace-type">{{ $value['type'] ?? (!empty($value['class']) ? '->' : '') }}</span><span class="trace-method">{{ $value['function'] ?? '' }}</span>(<span class="trace-arguments"></span>)
+                                    @if(!empty($value['file']))
+                                        <span class="block trace-file-path">in <span title="{{ $value['file'] }}"><strong>{{ $value['file'] }}</strong>{{ !empty($value['line']) ? ' line '.$value['line'] : '' }}</span></span>
+                                    @else
+                                        <span class="block trace-file-path text-muted">[internal function]</span>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -98,22 +106,10 @@
                 <table class="trace-details">
                     <thead class="trace-head"><tr><th>
                         <h3 class="trace-class">
-                            <span class="text-muted">(Previous)</span>
-                            <span class="exception_title"><span title="Previous Exception">Previous Exception</span></span>
+                            <span class="text-muted">(2/2)</span>
+                            <span class="exception_title"><span title="{{ $content['previous']['class'] ?? 'Exception' }}">{{ class_basename($content['previous']['class'] ?? 'Exception') }}</span></span>
                         </h3>
                         <p class="break-long-words trace-message">{{ $content['previous']['message'] ?? '' }}</p>
-                        @if($content['is_console'] ?? false)
-                            <p class="">Command: {{ implode(' ', $content['command'] ?? []) }}</p>
-                        @else
-                            <p class="">URL: <span style="font-weight: bold;">[{{ $content['method'] ?? 'GET' }}]</span> {{ $content['url'] ?? '' }}</p>
-                            <p class="">IP: {{ $content['ip'] ?? '' }}</p>
-                            @if(!empty($content['body']) && in_array($content['method'] ?? 'GET', ['POST', 'PUT', 'PATCH', 'DELETE']))
-                                <div>
-                                    <p class="" style="margin-bottom: 2px;">Payload:</p>
-                                    <pre style="background: #f4f4f4; padding: 8px; border: 1px solid #ddd; margin-top: 0; font-size: 12px; max-width: 100%; overflow-x: auto;">{{ json_encode($content['body'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
-                                </div>
-                            @endif
-                        @endif
                     </th></tr></thead>
                     <tbody>
                         <tr>
@@ -124,7 +120,12 @@
                         @foreach(($content['previous']['trace'] ?? []) as $value)
                             <tr>
                                 <td>
-                                    at <span class="trace-class"><span title="{{ $value['class'] ?? '' }}">{{ basename($value['class'] ?? '') }}</span></span><span class="trace-type">{{ !empty($value['class']) ? '->' : '' }}</span><span class="trace-method">{{ $value['function'] ?? '' }}</span>(<span class="trace-arguments"></span>)<span class="block trace-file-path">in <span title=""><strong>{{ $value['file'] ?? '' }}</strong> line {{ $value['line'] ?? '' }}</span></span>
+                                    at <span class="trace-class"><span title="{{ $value['class'] ?? '' }}">{{ class_basename($value['class'] ?? '') }}</span></span><span class="trace-type">{{ $value['type'] ?? (!empty($value['class']) ? '->' : '') }}</span><span class="trace-method">{{ $value['function'] ?? '' }}</span>(<span class="trace-arguments"></span>)
+                                    @if(!empty($value['file']))
+                                        <span class="block trace-file-path">in <span title="{{ $value['file'] }}"><strong>{{ $value['file'] }}</strong>{{ !empty($value['line']) ? ' line '.$value['line'] : '' }}</span></span>
+                                    @else
+                                        <span class="block trace-file-path text-muted">[internal function]</span>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -144,7 +145,7 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    <pre style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd; margin: 0; font-size: 12px; max-width: 100%; overflow-x: auto;">{{ json_encode($content['headers'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
+                                    <pre style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd; margin: 0; font-size: 12px; max-width: 100%; overflow-x: auto;">{{ json_encode($content['headers'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE) }}</pre>
                                 </td>
                             </tr>
                         </tbody>
@@ -161,7 +162,7 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    <pre style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd; margin: 0; font-size: 12px; max-width: 100%; overflow-x: auto;">{{ json_encode($content['cookie'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
+                                    <pre style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd; margin: 0; font-size: 12px; max-width: 100%; overflow-x: auto;">{{ json_encode($content['cookie'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE) }}</pre>
                                 </td>
                             </tr>
                         </tbody>
@@ -179,7 +180,7 @@
                     <tbody>
                         <tr>
                             <td>
-                                <pre style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd; margin: 0; font-size: 12px; max-width: 100%; overflow-x: auto;">{{ json_encode($content['server'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
+                                <pre style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd; margin: 0; font-size: 12px; max-width: 100%; overflow-x: auto;">{{ json_encode($content['server'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE) }}</pre>
                             </td>
                         </tr>
                     </tbody>

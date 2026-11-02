@@ -7,16 +7,19 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/artryazanov/laravel-error-mailer.svg?style=flat-square)](https://packagist.org/packages/artryazanov/laravel-error-mailer)
 [![License](https://img.shields.io/github/license/artryazanov/laravel-error-mailer.svg?style=flat-square)](https://github.com/artryazanov/laravel-error-mailer/blob/main/LICENSE)
 
-Laravel 11-13 package to automatically send detailed exception reports to configured email addresses. Features a clean HTML template that includes your application's name and environment, full stack traces, comprehensive context data, and built-in rate limiting to prevent spamming your inbox when your application throws repeated errors.
+Laravel 11–13 package to automatically send detailed exception reports to configured email addresses. Features a clean HTML template that includes your application's name and environment, full stack traces, comprehensive context data with automatic sensitive data masking, and built-in rate limiting to prevent spamming your inbox when your application throws repeated errors.
 
 ## ✨ Features
 - **Clean HTML Template:** A clear and readable layout for error reporting.
 - **Comprehensive Context Capture:**
-  - **Web Requests:** URL, Method, User info, Request Body, Headers, Cookies, and `$_SERVER` array.
+  - **Web Requests:** URL, Method, User info, Request Body (including safe metadata for uploaded files), Headers, Cookies, and `$_SERVER` array.
   - **Console Commands (CLI):** Command arguments and `$_SERVER` array.
-- **Rate Limiting:** Protects your inbox from spam when a recurring error floods your application.
-- **Smart Email Subjects:** The error message is automatically appended to the email subject line (and truncated if too long), making it easy to identify the error at a glance. An optional short hash can be enabled to group similar errors.
+- **Automatic Sensitive Data Masking:** Redacts passwords, tokens, API keys, authorization headers, cookies, and secret environment variables (`APP_KEY`, `DB_PASSWORD`, etc.) with `********`.
+- **Rate Limiting:** Protects your inbox from spam when a recurring error floods your application, with graceful fallback if your cache backend is unavailable.
+- **Exception Filtering:** Configure a list of ignored exception classes (including parent classes/interfaces) that should not trigger email notifications.
+- **Smart Email Subjects:** The error message is automatically normalized and appended to the email subject line (and truncated if too long), making it easy to identify the error at a glance. An optional short hash can be enabled to group similar errors.
 - **Previous Exceptions:** Automatically unwraps and displays previous exceptions in the chain.
+
 ## 📋 Requirements
 - PHP 8.2+
 - Laravel 11.x–13.x
@@ -57,10 +60,34 @@ ERROR_MAILER_SUBJECT="Error on production"
 # Optional: Append a hash of the exception message to the subject (useful for email clients grouping). Defaults to false.
 ERROR_MAILER_INCLUDE_HASH_IN_SUBJECT=false
 
-# Rate limit: Max emails to send per time window (in seconds)
+# Optional: Custom Blade view and queue name
+ERROR_MAILER_VIEW="error-mailer::emails.exception"
+ERROR_MAILER_QUEUE=default
+
+# Rate limit: Max emails to send per time window (in seconds). Set ERROR_MAILER_LIMIT=0 to disable.
 ERROR_MAILER_LIMIT=15
 ERROR_MAILER_WINDOW=3600
+
+# Maximum number of stack trace frames captured per exception
+ERROR_MAILER_TRACE_MAX_FRAMES=100
 ```
+
+### Ignoring Specific Exceptions
+
+In `config/error-mailer.php`, you can specify exception classes (or base classes/interfaces) that should never be emailed:
+
+```php
+'ignore' => [
+    \Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class,
+    \Illuminate\Validation\ValidationException::class,
+],
+```
+
+### Sensitive Data Masking
+
+By default, the package masks fields matching `password`, `password_confirmation`, `current_password`, `secret`, `token`, `api_key`, `access_token`, `refresh_token`, `authorization`, `cookie`, `x-api-key`, `x-csrf-token`, `x-xsrf-token`, `php-auth-pw`, `app_key`, `credit_card`, `card_number`, `cvv`, as well as any key ending in `_password`, `_secret`, `_key`, or `_token`.
+
+You can customize the `hidden_parameters` array in `config/error-mailer.php` to add your own application-specific sensitive keys.
 
 ## 💻 Usage
 
@@ -102,9 +129,27 @@ If your application loses connection to a database or a critical service goes do
 
 This package has built-in Rate Limiting to protect your inbox. By default, it allows sending **15 emails per hour**. Any exceptions thrown beyond this limit will be suppressed from the mailer (but a standard Laravel `Log::warning` will be recorded stating that the email was suppressed). 
 
-You can tweak the threshold in your `.env` using `ERROR_MAILER_LIMIT` and `ERROR_MAILER_WINDOW`.
+You can tweak the threshold in your `.env` using `ERROR_MAILER_LIMIT` and `ERROR_MAILER_WINDOW` (or set `ERROR_MAILER_LIMIT=0` to disable rate limiting).
 
-## 🧪 Local Testing & Preview
+## 🧪 Testing & Local Preview
+
+### Running Automated Tests & Quality Checks
+
+```bash
+# Run PHPUnit test suite
+composer test
+
+# Run PHPUnit with code coverage report
+composer test-coverage
+
+# Check code style with Laravel Pint
+composer lint
+
+# Run static analysis with PHPStan / Larastan
+composer analyse
+```
+
+### Email Preview with Mailpit
 
 If you want to see exactly how the generated emails look without deploying to a live server, this package includes a convenient Docker-based preview script using [Mailpit](https://mailpit.axllent.org/).
 
@@ -116,7 +161,7 @@ If you want to see exactly how the generated emails look without deploying to a 
    ```bash
    php preview-docker.php
    ```
-3. Open your browser and navigate to **http://localhost:18025** to view the rendered HTML email in Mailpit's beautiful web interface.
+3. Open your browser and navigate to **http://localhost:18025** to view the rendered HTML email in Mailpit's web interface.
 
 ## 🎨 Customizing the View
 

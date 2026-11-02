@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Artryazanov\ErrorMailer;
 
 use Illuminate\Support\ServiceProvider;
@@ -31,8 +33,10 @@ class ErrorMailerServiceProvider extends ServiceProvider
             __DIR__.'/../config/error-mailer.php', 'error-mailer'
         );
 
-        $this->app->singleton('error-mailer', function ($app) {
+        $this->app->singleton(ErrorMailer::class, function () {
             return new ErrorMailer;
         });
+
+        $this->app->alias(ErrorMailer::class, 'error-mailer');
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -95,12 +97,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Exception Email Queue
+    |--------------------------------------------------------------------------
+    |
+    | The queue name to which the exception email job should be dispatched.
+    |
+    */
+
+    'queue' => env('ERROR_MAILER_QUEUE', 'default'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Rate Limiting
     |--------------------------------------------------------------------------
     |
     | Configure how many exception emails can be sent per time window to
     | prevent spamming your inbox.
-    | limit: Maximum number of emails.
+    | limit: Maximum number of emails (set to 0 to disable rate limiting).
     | window: Time window in seconds.
     |
     */
@@ -108,6 +121,65 @@ return [
     'rate_limit' => [
         'limit' => (int) env('ERROR_MAILER_LIMIT', 15),
         'window' => (int) env('ERROR_MAILER_WINDOW', 3600), // 1 hour by default
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ignored Exceptions
+    |--------------------------------------------------------------------------
+    |
+    | A list of the exception types that should not be emailed.
+    |
+    */
+
+    'ignore' => [
+        // \Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Maximum Stack Trace Frames
+    |--------------------------------------------------------------------------
+    |
+    | Limit the number of stack trace frames captured per exception to prevent
+    | oversized queue payloads during deep recursion errors.
+    |
+    */
+
+    'trace_max_frames' => (int) env('ERROR_MAILER_TRACE_MAX_FRAMES', 100),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Hidden / Redacted Parameters
+    |--------------------------------------------------------------------------
+    |
+    | Keys listed here (as well as keys ending with _password, _secret, _key,
+    | or _token) will have their values masked with "********" in request
+    | payloads, headers, cookies, and $_SERVER context.
+    |
+    */
+
+    'hidden_parameters' => [
+        'password',
+        'password_confirmation',
+        'current_password',
+        'secret',
+        'token',
+        'api_key',
+        'access_token',
+        'refresh_token',
+        'authorization',
+        'proxy-authorization',
+        'cookie',
+        'set-cookie',
+        'x-api-key',
+        'x-csrf-token',
+        'x-xsrf-token',
+        'php-auth-pw',
+        'app_key',
+        'credit_card',
+        'card_number',
+        'cvv',
     ],
 
 ];

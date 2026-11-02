@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Artryazanov\ErrorMailer\Tests;
 
 use Artryazanov\ErrorMailer\ErrorMailerServiceProvider;
@@ -25,9 +27,9 @@ class TestCase extends Orchestra
      * Get package providers.
      *
      * @param  Application  $app
-     * @return array
+     * @return array<int, class-string>
      */
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return [
             ErrorMailerServiceProvider::class,
@@ -38,9 +40,9 @@ class TestCase extends Orchestra
      * Get package aliases.
      *
      * @param  Application  $app
-     * @return array
+     * @return array<string, class-string>
      */
-    protected function getPackageAliases($app)
+    protected function getPackageAliases($app): array
     {
         return [
             'ErrorMailer' => ErrorMailer::class,

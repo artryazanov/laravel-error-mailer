@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Artryazanov\ErrorMailer\ErrorMailer;
 use Artryazanov\ErrorMailer\ErrorMailerServiceProvider;
 use Illuminate\Support\Facades\Config;
@@ -18,6 +20,9 @@ $app = Application::create();
 // Register the package's service provider
 $app->register(ErrorMailerServiceProvider::class);
 
+// Ensure synchronous dispatch so the email is sent immediately to Mailpit
+Config::set('queue.default', 'sync');
+
 // Configure the mailer to use SMTP pointing to Mailpit (Docker)
 Config::set('mail.default', 'smtp');
 Config::set('mail.mailers.smtp', [
@@ -25,7 +30,7 @@ Config::set('mail.mailers.smtp', [
     'url' => env('MAIL_URL'),
     'host' => '127.0.0.1',
     'port' => 11025,
-    'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+    'encryption' => env('MAIL_ENCRYPTION'),
     'username' => env('MAIL_USERNAME'),
     'password' => env('MAIL_PASSWORD'),
     'timeout' => null,
