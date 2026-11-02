@@ -43,7 +43,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer require "larastan/larastan:^2.9|^3.0" --dev --no-interaction --no-update
+          composer require "larastan/larastan:^3.0" --dev --no-interaction --no-update
           composer update --prefer-dist --no-interaction --no-progress
 
       - name: Run PHPStan

@@ -3,7 +3,7 @@
 ## Tech Stack
 *   **Type:** Laravel Package
 *   **PHP Version:** 8.2+
-*   **Framework Version:** Laravel 11.x - 13.x
+*   **Framework Version:** Laravel 12.x - 13.x
 
 ## Code Style, Linting & Static Analysis
 *   **Conventions:** Follow standard PSR-12 / Laravel Pint conventions (`composer lint` to check, `composer format` to fix).

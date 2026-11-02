@@ -7,7 +7,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/artryazanov/laravel-error-mailer.svg?style=flat-square)](https://packagist.org/packages/artryazanov/laravel-error-mailer)
 [![License](https://img.shields.io/github/license/artryazanov/laravel-error-mailer.svg?style=flat-square)](https://github.com/artryazanov/laravel-error-mailer/blob/main/LICENSE)
 
-Laravel 11–13 package to automatically send detailed exception reports to configured email addresses. Features a clean HTML template that includes your application's name and environment, full stack traces, comprehensive context data with automatic sensitive data masking, and built-in rate limiting to prevent spamming your inbox when your application throws repeated errors.
+Laravel 12–13 package to automatically send detailed exception reports to configured email addresses. Features a clean HTML template that includes your application's name and environment, full stack traces, comprehensive context data with automatic sensitive data masking, and built-in rate limiting to prevent spamming your inbox when your application throws repeated errors.
 
 ## ✨ Features
 - **Clean HTML Template:** A clear and readable layout for error reporting.
@@ -22,7 +22,7 @@ Laravel 11–13 package to automatically send detailed exception reports to conf
 
 ## 📋 Requirements
 - PHP 8.2+
-- Laravel 11.x–13.x
+- Laravel 12.x–13.x
 
 ## 📦 Installation
 
