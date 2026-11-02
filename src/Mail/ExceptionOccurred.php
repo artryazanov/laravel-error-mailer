@@ -49,7 +49,7 @@ class ExceptionOccurred extends Mailable implements ShouldQueue
         $rawSubject = config('error-mailer.subject');
         $subject = is_string($rawSubject) && trim($rawSubject) !== ''
             ? $rawSubject
-            : 'Error on '.config('app.name', 'Laravel').' ('.config('app.env', 'production').')';
+            : 'Error on '.config('app.name', 'Laravel');
         $subject = $this->buildSubjectWithMessage($subject);
 
         $rawView = config('error-mailer.view', 'error-mailer::emails.exception');

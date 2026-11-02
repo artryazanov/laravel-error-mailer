@@ -53,7 +53,7 @@ ERROR_MAILER_FROM=error-mailer@example.com
 ERROR_MAILER_TO=admin@example.com
 ERROR_MAILER_CC=
 ERROR_MAILER_BCC=
-# Optional: Override the default subject "Error on {APP_NAME} ({APP_ENV})"
+# Optional: Override the default subject "Error on {APP_NAME}"
 # The exact error message is automatically appended to the subject in either case.
 ERROR_MAILER_SUBJECT="Error on production"
 

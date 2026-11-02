@@ -77,20 +77,19 @@ class ExceptionOccurredTest extends TestCase
         Config::set('error-mailer.from', null);
         Config::set('error-mailer.view', null);
         Config::set('app.name', 'MyApp');
-        Config::set('app.env', 'staging');
 
         $mailable = new ExceptionOccurred([
             'message' => "First line\r\nSecond line\nThird line",
         ]);
         $mailable->build();
 
-        $this->assertEquals('Error on MyApp (staging): First line Second line Third line', $mailable->subject);
+        $this->assertEquals('Error on MyApp: First line Second line Third line', $mailable->subject);
         $this->assertEmpty($mailable->from);
         $this->assertEquals('error-mailer::emails.exception', $mailable->view);
 
         $emptyMessageMailable = new ExceptionOccurred(['message' => '']);
         $emptyMessageMailable->build();
-        $this->assertEquals('Error on MyApp (staging)', $emptyMessageMailable->subject);
+        $this->assertEquals('Error on MyApp', $emptyMessageMailable->subject);
     }
 
     public function test_it_parses_comma_separated_emails(): void
