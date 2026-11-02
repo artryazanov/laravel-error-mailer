@@ -47,7 +47,7 @@ jobs:
       - name: Install dependencies
         run: |
           if [ "${{ matrix.dependency-version }}" = "prefer-lowest" ]; then
-            composer config --json policy.advisories '{"block": false}'
+            composer config policy.advisories.block false
           fi
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --dev --no-interaction --no-update
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-progress
